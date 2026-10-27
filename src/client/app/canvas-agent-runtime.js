@@ -5186,7 +5186,7 @@
       renderConnectionLists();
     }
     canvasAgentToggle.hidden = !canvasAgentAvailable();
-    if(window.PENECHO_CONFIG?.guestCanvas)canvasAgentToggle.title=state.language==="zh"?"登录后使用 PenEcho Agent":"Sign in to use PenEcho Agent";
+    if(window.PENECHO_CONFIG?.guestCanvas)canvasAgentToggle.title=state.language==="zh"?"登录后使用 Think Canvas Agent":"Sign in to use Think Canvas Agent";
     if (!canvasAgentAvailable() && !canvasAgentPanel.hidden) closeCanvasAgent({ focus:false, animate:false });
     canvasAgentUpdateConnectionButton();
     canvasAgentSyncSendAvailability();

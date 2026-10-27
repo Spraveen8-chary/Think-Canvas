@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { cliInvocation, ensureMcp, isMainModule, SERVER_NAME, SERVER_URL } from '../integrations/penecho-cloud/skills/penecho-canvas/scripts/setup-mcp.mjs';
 
 const missing = { status: 1, stdout: '', stderr: `Error: No MCP server named '${SERVER_NAME}' found.` };
@@ -138,8 +138,10 @@ test('claude: a disabled production alias is preserved and skipped; the connecti
 
 test('the CLI entry check follows symlinked skill directories', async () => {
   const script = new URL('../integrations/penecho-cloud/skills/penecho-canvas/scripts/setup-mcp.mjs', import.meta.url);
-  const link = join(await mkdtemp(join(tmpdir(), 'penecho-skill-link-')), 'setup-mcp.mjs');
-  await symlink(script, link);
+  const temp = await mkdtemp(join(tmpdir(), 'penecho-skill-link-'));
+  const linkDir = join(temp, 'scripts');
+  await symlink(fileURLToPath(new URL('.', script)), linkDir, process.platform === 'win32' ? 'junction' : 'dir');
+  const link = join(linkDir, 'setup-mcp.mjs');
   assert.equal(isMainModule(link, script.href), true);
   assert.equal(isMainModule(join(tmpdir(), 'other.mjs'), script.href), false);
   assert.equal(isMainModule(undefined, pathToFileURL(link).href), false);

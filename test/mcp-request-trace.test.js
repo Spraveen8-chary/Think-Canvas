@@ -294,7 +294,7 @@ test("symlinked trace roots cannot write or create outside the root", () => {
   const directory = tempDirectory(), outside = tempDirectory();
   fs.mkdirSync(path.join(outside, "session-" + "a".repeat(64)));
   fs.mkdirSync(path.join(outside, "session-" + "b".repeat(64)));
-  fs.symlinkSync(outside, path.join(directory, "linked"));
+  fs.symlinkSync(outside, path.join(directory, "linked"), process.platform === "win32" ? "junction" : "dir");
   const tracer = createMcpRequestTracer({requestTraceDirectory:path.join(directory,"linked"),requestTraceLimit:1});
   const trace = tracer.begin({ownerId:"owner",name:"read",arguments:{}});
   tracer.complete(trace,{text:"must not escape"});

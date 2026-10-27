@@ -43,7 +43,7 @@ test("IP settings validate input, retain credentials across address edits, and r
   const changed=apply("save-address",{host:"192.168.1.81",port:13922});
   assert.equal(changed.accessToken,first.accessToken);assert.equal(changed.previousUrl,"https://192.168.1.80:3922/mcp");
   assert.deepEqual(createIpDirectSettings(dir).get(),changed);
-  assert.equal(fs.statSync(path.join(dir,"direct-http","ip-direct.json")).mode&0o777,0o600);
+  if (process.platform !== "win32") assert.equal(fs.statSync(path.join(dir,"direct-http","ip-direct.json")).mode&0o777,0o600);
   const disabled=apply("set-enabled",{enabled:false});assert.equal(disabled.accessToken,first.accessToken);
   const rotated=apply("rotate-token");assert.notEqual(rotated.accessToken,first.accessToken);assert.equal(rotated.enabled,false);
   assert.equal(rotated.previousUrl,"");
@@ -53,9 +53,15 @@ test("IP settings reject malformed, oversized and symlinked persisted files",t=>
   for(const bytes of ["{}","broken","x".repeat(4097)]){
     fs.writeFileSync(file,bytes);assert.throws(()=>createIpDirectSettings(dir),{code:"invalid_ip_settings"});
   }
-  fs.unlinkSync(file);const external=path.join(dir,"external.json");fs.writeFileSync(external,"{}");fs.symlinkSync(external,file);
-  assert.throws(()=>createIpDirectSettings(dir),{code:"invalid_ip_settings"});assert.equal(fs.readFileSync(external,"utf8"),"{}");
-  fs.unlinkSync(file);fs.rmdirSync(folder);fs.symlinkSync(dir,folder);
+  fs.unlinkSync(file);const external=path.join(dir,"external.json");fs.writeFileSync(external,"{}");
+  try {
+    fs.symlinkSync(external,file);
+    assert.throws(()=>createIpDirectSettings(dir),{code:"invalid_ip_settings"});assert.equal(fs.readFileSync(external,"utf8"),"{}");
+    fs.unlinkSync(file);
+  } catch (err) {
+    if (err.code !== "EPERM" || process.platform !== "win32") throw err;
+  }
+  fs.rmdirSync(folder);fs.symlinkSync(dir,folder,process.platform==="win32"?"junction":"dir");
   assert.throws(()=>createIpDirectSettings(dir),{code:"invalid_ip_settings"});
 });
 test("real HTTPS fixed-IP and discovery sessions have independent authentication and revocation",async t=>{

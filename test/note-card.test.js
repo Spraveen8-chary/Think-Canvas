@@ -100,7 +100,7 @@ test("knowledge cards and work notes omit the subtitle row without losing source
 });
 
 test("Organize as Note builds a card from Canvas parts and guesses a category for PenEchoLLM to refine", () => {
-  const note = NOTE.noteFromParts({ now:Date.UTC(2026, 9, 2), items:[
+  const note = NOTE.noteFromParts({ now:new Date(2026, 9, 2, 12).getTime(), items:[
     { kind:"text", text:"Kinematics", y:0 }, { kind:"text", text:"$v = u + at$", y:40 },
     { kind:"graph", expressions:["y = 2x"], y:80 }, { kind:"image", src:PNG, w:1, h:1, y:120 },
   ], ink:{ src:PNG, w:1, h:1, y:60 } });
@@ -110,8 +110,8 @@ test("Organize as Note builds a card from Canvas parts and guesses a category fo
   assert.equal(note.categorySource, "local");
   assert.equal(NOTE.guessCategory("Sprint sync", [{ type:"markdown", text:"Agenda and attendees" }]), "meeting");
   assert.equal(NOTE.guessCategory("Launch", [{ type:"checklist", items:[{ text:"a" }] }]), "todo");
-  assert.match(NOTE.noteFromParts({ ink:{ src:PNG, w:1, h:1 }, now:Date.UTC(2026, 9, 2) }).title, /^Note · Oct 2, 2026$/);
-  assert.match(NOTE.noteFromParts({ ink:{ src:PNG }, language:"zh", now:Date.UTC(2026, 9, 2) }).title, /^笔记 · 2026年10月2日$/);
+  assert.match(NOTE.noteFromParts({ ink:{ src:PNG, w:1, h:1 }, now:new Date(2026, 9, 2, 12).getTime() }).title, /^Note · Oct 2, 2026$/);
+  assert.match(NOTE.noteFromParts({ ink:{ src:PNG }, language:"zh", now:new Date(2026, 9, 2, 12).getTime() }).title, /^笔记 · 2026年10月2日$/);
 });
 
 test("every card on a Canvas shares one size and lands beside its source without covering content", () => {

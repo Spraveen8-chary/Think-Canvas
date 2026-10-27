@@ -23,8 +23,8 @@
     const card=document.createElement("section"),header=document.createElement("header"),title=document.createElement("strong"),expand=document.createElement("button"),close=document.createElement("button"),status=document.createElement("div"),trail=document.createElement("ol");
     card.id="assistAgentMini";card.className="assist-agent-mini";card.hidden=true;
     card.dataset.penechoModelHidden="true";card.dataset.html2canvasIgnore="true";
-    card.setAttribute("role","region");card.setAttribute("aria-label","PenEcho Agent");
-    title.textContent="PenEcho Agent";expand.type=close.type="button";
+    card.setAttribute("role","region");card.setAttribute("aria-label","Think Canvas Agent");
+    title.textContent="Think Canvas Agent";expand.type=close.type="button";
     for(const [button,data] of [[expand,"M14 5h5v5m0-5-6 6M10 19H5v-5m0 5 6-6"],[close,"M5 5l14 14M19 5 5 19"]]) {
       const icon=document.createElementNS("http://www.w3.org/2000/svg","svg"),path=document.createElementNS("http://www.w3.org/2000/svg","path");
       icon.setAttribute("viewBox","0 0 24 24");icon.setAttribute("aria-hidden","true");icon.setAttribute("focusable","false");

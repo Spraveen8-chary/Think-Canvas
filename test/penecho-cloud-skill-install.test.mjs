@@ -130,7 +130,7 @@ test('later symlink or non-file conflicts are preflighted before any existing Sk
   await mkdir(directory, { recursive: true });
   const original = '---\nname: penecho-canvas\ndescription: Existing customized Skill\n---\n';
   await writeFile(join(directory, 'SKILL.md'), original);
-  await symlink(source, join(directory, 'scripts'));
+  await symlink(source, join(directory, 'scripts'), process.platform === 'win32' ? 'junction' : 'dir');
   await assert.rejects(installSkill({ host: 'codex', surface: 'local', homeDirectory: home, run: cli('codex', { installed: true }).run }), /symbolic link/);
   assert.equal(await readFile(join(directory, 'SKILL.md'), 'utf8'), original);
   await rm(join(directory, 'scripts'));
@@ -156,7 +156,7 @@ test('native discovery matches canonical Skill paths through a temporary-root al
   await mkdir(actual);
   await writeFile(join(actual, 'SKILL.md'), 'canonical');
   const alias = join(root, 'alias');
-  await symlink(actual, alias);
+  await symlink(actual, alias, process.platform === 'win32' ? 'junction' : 'dir');
   const api = skillApi(join(actual, 'SKILL.md'));
   const result = await verifySkill({ host: 'codex', skillPath: join(alias, 'SKILL.md'), cwd: root, openSkillApi: api.open });
   assert.equal(result.status, 'enabled');

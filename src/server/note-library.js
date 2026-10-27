@@ -20,8 +20,10 @@ class NoteLibrary {
     try { await handle.writeFile(JSON.stringify(value)); await handle.sync(); }
     finally { await handle.close(); }
     await fs.rename(temporary, file);
-    const folder = await fs.open(path.dirname(file), "r");
-    try { await folder.sync(); } finally { await folder.close(); }
+    if (process.platform !== "win32") {
+      const folder = await fs.open(path.dirname(file), "r");
+      try { await folder.sync(); } finally { await folder.close(); }
+    }
   }
   serial(run) {
     const operation = this.queue.then(run);

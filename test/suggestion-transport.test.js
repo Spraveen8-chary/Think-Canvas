@@ -119,7 +119,8 @@ test("Suggest retains certificate and hostname validation while reusing HTTPS so
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "penecho-suggest-tls-"));
   t.after(() => fs.rmSync(directory, { recursive:true, force:true }));
   const key = path.join(directory, "key.pem"), cert = path.join(directory, "cert.pem");
-  execFileSync("openssl", ["req", "-x509", "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1", "-nodes", "-days", "1", "-keyout", key, "-out", cert, "-subj", "/CN=localhost", "-addext", "subjectAltName=DNS:localhost,IP:127.0.0.1"], { stdio:"ignore" });
+  const opensslBin = process.platform === "win32" && !(() => { try { execFileSync("openssl", ["version"]); return true; } catch { return false; } })() && fs.existsSync("C:\\Program Files\\Git\\usr\\bin\\openssl.exe") ? "C:\\Program Files\\Git\\usr\\bin\\openssl.exe" : "openssl";
+  execFileSync(opensslBin, ["req", "-x509", "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1", "-nodes", "-days", "1", "-keyout", key, "-out", cert, "-subj", "/CN=localhost", "-addext", "subjectAltName=DNS:localhost,IP:127.0.0.1"], { stdio:"ignore" });
   const certificate = fs.readFileSync(cert);
   const f = await fixture(t, (_req, res) => res.end("{}"), { key:fs.readFileSync(key), cert:certificate });
   await assert.rejects(f.transport.request(f.url), error => error.code === "DEPTH_ZERO_SELF_SIGNED_CERT");
