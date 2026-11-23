@@ -1,9 +1,0 @@
-{
-  "appId": "ai.penecho.mobile",
-  "appName": "PenEcho",
-  "webDir": "web",
-  "server": {
-    "allowNavigation": ["*"],
-    "cleartext": true
-  }
-}

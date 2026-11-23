@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "penecho-cloud": {
-      "type": "http",
-      "url": "https://penecho.ai/mcp"
-    }
-  }
-}

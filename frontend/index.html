@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Think Canvas</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="logo"></span> Think Canvas</div>
+      <button id="newCanvas" class="btn wide">+ New canvas</button>
+      <ul id="canvasList" class="list"></ul>
+      <div class="side-foot">
+        <button id="openLibrary" class="btn side">Library (books &amp; PDFs)</button>
+        <button id="openHistory" class="btn side">History</button>
+        <button id="openAccount" class="btn side">Account: <span id="userName"></span></button>
+        <small><span id="provider"></span> · <span id="tokens">0 tokens this session</span></small>
+      </div>
+    </aside>
+
+    <main>
+      <header class="toolbar">
+        <input id="title" class="title" maxlength="100" placeholder="Canvas title" aria-label="Canvas title">
+
+        <div class="group" role="group" aria-label="Tools">
+          <button id="toolPen" class="btn" title="Write with the pen">Pen</button>
+          <button id="toolText" class="btn" title="Click the canvas and type a question">Type</button>
+          <button id="toolEraser" class="btn" title="Eraser">Eraser</button>
+          <button id="toolHand" class="btn" title="Move around (or hold Space)">Move</button>
+        </div>
+        <div class="group">
+          <button id="importImage" class="btn" title="Add a picture (you can also paste or drop one)">Image</button>
+          <button id="undo" class="btn" title="Undo (Ctrl+Z)">Undo</button>
+          <button id="clear" class="btn">Clear</button>
+          <button id="grid" class="btn" title="Change the grid">Grid</button>
+          <button id="find" class="btn" title="Jump to your work (Home). Press again for the next spot">Find my work</button>
+        </div>
+        <div class="group auto">
+          <label><input id="auto" type="checkbox"> Auto-answer</label>
+          <select id="delay" aria-label="How long to wait after you stop writing">
+            <option value="1500">1.5 s</option>
+            <option value="2500">2.5 s</option>
+            <option value="4000">4 s</option>
+          </select>
+        </div>
+        <button id="askNow" class="btn primary">Answer now</button>
+        <span id="status" role="status"></span>
+      </header>
+
+      <div class="stage">
+        <canvas id="board" role="img" aria-label="Drawing canvas. Use the Type tool to type a question instead of drawing."></canvas>
+        <div id="hint" class="hint">
+          <strong>Write or type a question, or add an image</strong>
+          <span>Pause for a moment and Think Canvas answers next to it. Try: "plot sin x", "flowchart of login", "animate earth orbiting the sun".</span>
+        </div>
+        <button id="backPill" class="pill" hidden>↩ Back to your work</button>
+        <div class="timer"><span id="timerBar"></span></div>
+      </div>
+    </main>
+  </div>
+  <input id="imageFile" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+
+  <dialog id="libraryDialog">
+    <form method="dialog">
+      <h2>Library</h2>
+      <p class="note">Add your textbooks or notes. They are split into passages and stored in your MongoDB. When you ask a question, the best 3 passages are sent to the AI, so answers can come from your books while using few tokens.</p>
+      <label class="row"><input id="useLibrary" type="checkbox"> Use my library when answering</label>
+      <ul id="docList" class="list plain"></ul>
+      <div class="row">
+        <label class="btn primary file">Add PDF / TXT / MD<input id="docFile" type="file" accept=".pdf,.txt,.md" multiple hidden></label>
+        <span id="libStatus" class="note"></span>
+        <button class="btn right" data-close>Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="historyDialog">
+    <form method="dialog">
+      <h2>History</h2>
+      <ul id="historyList" class="list plain"></ul>
+      <div class="row"><button class="btn right" data-close>Close</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="accountDialog">
+    <form method="dialog">
+      <h2>Account</h2>
+      <label>Name <input id="accName" maxlength="80"></label>
+      <label>Email <input id="accEmail" readonly></label>
+      <label>College / organisation <input id="accOrg" maxlength="120"></label>
+      <p class="note" id="accSince"></p>
+      <div class="row">
+        <button id="accSave" class="btn primary">Save</button>
+        <span id="accStatus" class="note"></span>
+        <button id="accLogout" class="btn right">Log out</button>
+        <button class="btn" data-close>Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Think Canvas · Log in</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <div class="brand"><span class="logo"></span> Think Canvas</div>
+    <p class="note">Write, type or draw. Get answers on the canvas. Your work and history are saved to your account.</p>
+
+    <div class="tabs" role="tablist">
+      <button id="tabLogin" class="on" type="button">Log in</button>
+      <button id="tabRegister" type="button">Create account</button>
+    </div>
+
+    <form id="form">
+      <label id="nameRow" hidden>Name <input id="name" autocomplete="name" maxlength="80"></label>
+      <label>Email <input id="email" type="email" autocomplete="email" required></label>
+      <label>Password <input id="password" type="password" autocomplete="current-password" minlength="8" required></label>
+      <label id="orgRow" hidden>College / organisation (optional) <input id="org" maxlength="120"></label>
+      <p id="error" class="error" role="alert"></p>
+      <button id="submit" class="btn primary wide-btn">Log in</button>
+    </form>
+  </main>
+  <script type="module" src="js/auth.js"></script>
+</body>
+</html>

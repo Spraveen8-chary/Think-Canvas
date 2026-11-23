@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pymongo
+pypdf
+httpx
+python-multipart
+python-dotenv
+# tests only
+pytest
+mongomock
