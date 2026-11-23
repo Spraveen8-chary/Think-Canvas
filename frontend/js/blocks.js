@@ -207,12 +207,27 @@ function paintDraw(g, item) {
 }
 
 // ---- animation (declarative: the AI never sends code) ---------------------------------------
-const anchorOf = (o) => (o.type === "circle" ? [o.cx, o.cy] : o.type === "rect" ? [o.x + o.w / 2, o.y + o.h / 2] : o.type === "line" ? [(o.x1 + o.x2) / 2, (o.y1 + o.y2) / 2] : [o.x, o.y]);
+const anchorOf = (o) => (o.type === "path" ? o.points[0] : o.type === "circle" ? [o.cx, o.cy] : o.type === "rect" ? [o.x + o.w / 2, o.y + o.h / 2] : o.type === "line" ? [(o.x1 + o.x2) / 2, (o.y1 + o.y2) / 2] : [o.x, o.y]);
+
+// Point at fraction t (0..1) of the way along a polyline, measured by length. Exported for tests.
+export function pointAlong(points, t) {
+  const lens = points.slice(1).map((p, i) => Math.hypot(p[0] - points[i][0], p[1] - points[i][1]));
+  let left = Math.max(0, Math.min(1, t)) * lens.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < lens.length; i++) {
+    if (left <= lens[i] || i === lens.length - 1) {
+      const k = lens[i] ? Math.min(1, left / lens[i]) : 0;
+      return [points[i][0] + (points[i + 1][0] - points[i][0]) * k, points[i][1] + (points[i + 1][1] - points[i][1]) * k];
+    }
+    left -= lens[i];
+  }
+  return points[0];
+}
 
 // Position/rotation/scale of every object at time `t` (ms). Exported for tests.
 export function sceneState(spec, t) {
   const base = new Map(spec.o.map((o) => [o.id, anchorOf(o)]));
   const st = new Map(spec.o.map((o) => [o.id, { dx: 0, dy: 0, rot: 0, scale: 1 }]));
+  const paths = new Map(spec.o.filter((o) => o.type === "path").map((o) => [o.id, o]));
   for (const m of spec.m) {
     const s = st.get(m.target), [ax, ay] = base.get(m.target), phase = ((t % m.ms) / m.ms);
     if (m.type === "orbit") {
@@ -223,6 +238,9 @@ export function sceneState(spec, t) {
     else if (m.type === "move") {
       const p = phase < 0.5 ? phase * 2 : 2 - phase * 2;           // there and back
       s.dx = m.from[0] + (m.to[0] - m.from[0]) * p - ax; s.dy = m.from[1] + (m.to[1] - m.from[1]) * p - ay;
+    } else if (m.type === "follow") {
+      const path = paths.get(m.along);
+      if (path) { const [px, py] = pointAlong(path.points, phase); s.dx = px - ax; s.dy = py - ay; }
     } else if (m.type === "pulse") s.scale = m.from + (m.to - m.from) * (0.5 - 0.5 * Math.cos(phase * Math.PI * 2));
   }
   return { base, st };
@@ -243,6 +261,13 @@ function paintAnim(g, item, now) {
     if (o.type === "circle") g.arc(o.cx, o.cy, Math.max(0, o.r), 0, Math.PI * 2);
     else if (o.type === "rect") g.rect(o.x, o.y, o.w, o.h);
     else if (o.type === "line") { g.moveTo(o.x1, o.y1); g.lineTo(o.x2, o.y2); g.strokeStyle = o.stroke || o.fill || INK; }
+    else if (o.type === "path") {                                   // a curve drawn once; smooth through midpoints
+      const p = o.points;
+      g.moveTo(p[0][0], p[0][1]);
+      for (let i = 1; i < p.length - 1; i++) g.quadraticCurveTo(p[i][0], p[i][1], (p[i][0] + p[i + 1][0]) / 2, (p[i][1] + p[i + 1][1]) / 2);
+      g.lineTo(p.at(-1)[0], p.at(-1)[1]);
+      g.fillStyle = "transparent"; g.strokeStyle = o.stroke || o.fill || "#8a91a6"; g.setLineDash([6, 5]);
+    }
     if (o.type !== "text") { g.fill(); g.stroke(); }
     else { g.fillStyle = o.fill || INK; g.font = `${o.size}px system-ui, sans-serif`; g.textBaseline = "middle"; g.fillText(o.text, o.x, o.y); }
     g.restore();

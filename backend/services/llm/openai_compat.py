@@ -6,11 +6,12 @@ from .http import post_json
 
 class OpenAICompatible(LLMProvider):
     def __init__(self, name: str, base_url: str, api_key: str, model: str, *, max_tokens: int, timeout_s: int,
-                 key_required: bool = True, official_openai: bool = False, extra_headers: dict | None = None):
+                 key_required: bool = True, official_openai: bool = False, json_mode: bool = False,
+                 extra_headers: dict | None = None):
         self.name, self.model = name, model
         self.base_url, self.api_key = base_url.rstrip("/"), api_key
         self.max_tokens, self.timeout_s = max_tokens, timeout_s
-        self.key_required, self.official_openai = key_required, official_openai
+        self.key_required, self.official_openai, self.json_mode = key_required, official_openai, json_mode
         self.extra_headers = extra_headers or {}
 
     async def complete(self, system: str, text: str, image: str | None = None) -> LLMReply:
@@ -22,8 +23,8 @@ class OpenAICompatible(LLMProvider):
         body = {"model": self.model, "messages": [{"role": "system", "content": system}, {"role": "user", "content": content}]}
         # OpenAI's newer models want max_completion_tokens; everything else uses max_tokens.
         body["max_completion_tokens" if self.official_openai else "max_tokens"] = self.max_tokens
-        if self.official_openai:
-            body["response_format"] = {"type": "json_object"}        # not every OpenRouter model supports this
+        if self.json_mode:
+            body["response_format"] = {"type": "json_object"}        # the API then guarantees syntactically valid JSON
         headers = dict(self.extra_headers)
         if self.api_key:
             headers["authorization"] = f"Bearer {self.api_key}"

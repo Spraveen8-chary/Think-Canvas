@@ -32,9 +32,14 @@ def test_openrouter_uses_the_keys_and_model_from_env(monkeypatch):
     assert seen["url"] == "https://openrouter.ai/api/v1/chat/completions"
     assert seen["headers"]["authorization"] == "Bearer sk-or-test" and seen["headers"]["X-Title"] == "Think Canvas"
     assert seen["body"]["model"] == "openai/gpt-4o" and seen["body"]["max_tokens"] == 700
-    assert "response_format" not in seen["body"]                       # not every OpenRouter model accepts it
+    assert seen["body"]["response_format"] == {"type": "json_object"}   # OpenAI models: valid JSON is guaranteed
     assert seen["body"]["messages"][1]["content"][1]["type"] == "image_url"
     assert (reply.tokens_in, reply.tokens_out) == (120, 9)
+
+    monkeypatch.setenv("OPEN_ROUTER_MODEL", "anthropic/claude-sonnet-4.5")
+    other = registry.get_provider()
+    run(other.complete("system", "hello"))
+    assert "response_format" not in seen["body"]                       # other vendors may reject it
 
 
 def test_old_openrouter_variable_names_also_work(monkeypatch):

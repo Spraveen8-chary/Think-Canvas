@@ -13,12 +13,13 @@ def build_provider(s: Settings) -> LLMProvider:
     if s.provider == "openrouter":
         return OpenAICompatible(
             "openrouter", "https://openrouter.ai/api/v1", s.openrouter_api_key, s.openrouter_model,
+            json_mode=s.openrouter_model.startswith("openai/"),            # other vendors may reject response_format
             extra_headers={"HTTP-Referer": "http://localhost", "X-Title": "Think Canvas"}, **common,
         )
     if s.provider == "openai":
         official = "api.openai.com" in s.openai_base_url          # a custom URL means a local model: no key needed
         return OpenAICompatible("openai", s.openai_base_url, s.openai_api_key, s.openai_model,
-                                key_required=official, official_openai=official, **common)
+                                key_required=official, official_openai=official, json_mode=official, **common)
     if s.provider == "anthropic":
         return AnthropicProvider(s.anthropic_api_key, s.anthropic_model, **common)
     if s.provider == "claude-cli":

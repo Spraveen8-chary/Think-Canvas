@@ -14,6 +14,7 @@ test("formulas: precedence, powers, functions, implicit multiplication", async (
   near(compile("sin(pi/2) + cos(0)")(0), 2);
   near(compile("sqrt(x)*e")(4), 2 * Math.E);
   assert.equal(compile("x**2")(5), 25);
+  near(compile("sin(30*deg)")(0), 0.5);                  // degrees: 30*deg = 30 degrees
   assert.equal(compile("1/x")(0), Infinity);
 });
 
@@ -55,6 +56,17 @@ test("work spots: close items group together, newest spot first", async () => {
   assert.equal(spots[1].box.x, 0);                          // A (last touched at index 2)
   assert.equal(spots[1].box.w, 110);                        // A's two items merged
   assert.equal(spots[2].box.x, 3000);
+});
+
+test("animation: a ball follows a drawn path from start to end", async () => {
+  const { sceneState, pointAlong } = await load("blocks.js");
+  const arc = [[0, 100], [50, 0], [100, 100]];
+  assert.deepEqual(pointAlong(arc, 0), [0, 100]);
+  assert.deepEqual(pointAlong(arc, 1), [100, 100]);
+  near(pointAlong(arc, 0.5)[0], 50);                       // halfway by length is the top of the symmetric arc
+  const spec = { o: [{ id: "arc", type: "path", points: arc }, { id: "b", type: "circle", cx: 0, cy: 100, r: 5 }], m: [{ type: "follow", target: "b", along: "arc", ms: 1000 }] };
+  const mid = sceneState(spec, 500).st.get("b");
+  near(0 + mid.dx, 50); near(100 + mid.dy, 0);             // ball is at the top of the arc at half time
 });
 
 test("animation: planet orbits the sun and starts where it was drawn", async () => {

@@ -110,6 +110,23 @@ def test_ask_reports_unreadable_ai_reply(client, fake_ai):
     assert r.status_code == 502 and error_code(r) == "upstream_error"
 
 
+def test_ask_retries_once_when_the_reply_is_not_valid_json(client, fake_ai):
+    register(client)
+    replies = iter(['{"read":"x","blocks":[{"t":"anim","w":300,"h":200,"o":[],"m":[], "ms": 25*2}]}',     # arithmetic: not JSON
+                    '{"read":"x","blocks":[{"t":"text","text":"ok"}]}'])
+    original = fake_ai.complete
+
+    async def flaky(system, text, image=None):
+        fake_ai.reply = next(replies)
+        return await original(system, text, image)
+
+    fake_ai.complete = flaky
+    r = client.post("/api/ask", json={"typed": "projectile motion"})
+    assert r.status_code == 200 and r.json()["blocks"] == [{"t": "text", "text": "ok"}]
+    assert len(fake_ai.calls) == 2 and "not valid JSON" in fake_ai.calls[1]["text"]
+    assert r.json()["tokens"] == {"in": 600, "out": 40}                     # both attempts are counted
+
+
 def test_ask_is_rate_limited_per_user(client, fake_ai):
     register(client)
     deps.ask_limiter.limit = 2

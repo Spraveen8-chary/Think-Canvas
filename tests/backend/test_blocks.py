@@ -55,6 +55,18 @@ def test_anim_checks_targets_and_motion_types():
     assert len(a["m"]) == 1 and a["m"][0]["center"] == "sun" and "fill" not in a["o"][1]
 
 
+def test_anim_path_and_follow_motion():
+    a = clean({"blocks": [{"t": "anim", "o": [
+        {"id": "arc", "type": "path", "points": [[10, 200], [100, 40], [190, 200], ["x", 1]], "stroke": "#999"},
+        {"id": "ball", "type": "circle", "cx": 10, "cy": 200, "r": 6, "fill": "#38f"},
+        {"id": "bad", "type": "path", "points": [[1, 1]]}],
+        "m": [{"type": "follow", "target": "ball", "along": "arc", "ms": 2500},
+              {"type": "follow", "target": "ball", "along": "ball", "ms": 2500},
+              {"type": "follow", "target": "arc", "along": "arc", "ms": 2500}]}]})["blocks"][0]
+    assert [o["id"] for o in a["o"]] == ["arc", "ball"] and a["o"][0]["points"] == [[10.0, 200.0], [100.0, 40.0], [190.0, 200.0]]
+    assert a["m"] == [{"type": "follow", "target": "ball", "ms": 2500.0, "along": "arc"}]
+
+
 def test_at_most_four_blocks_and_lookup_passthrough():
     r = clean({"read": "q", "lookup": "force mass", "blocks": [{"t": "text", "text": str(i)} for i in range(9)]})
     assert len(r["blocks"]) == 4 and r["lookup"] == "force mass"

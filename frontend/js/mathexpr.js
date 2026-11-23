@@ -5,7 +5,7 @@ const FUNCS = {
   sin: Math.sin, cos: Math.cos, tan: Math.tan, asin: Math.asin, acos: Math.acos, atan: Math.atan,
   sqrt: Math.sqrt, abs: Math.abs, exp: Math.exp, ln: Math.log, log: Math.log10,
 };
-const CONSTS = { pi: Math.PI, e: Math.E };
+const CONSTS = { pi: Math.PI, e: Math.E, deg: Math.PI / 180 };   // deg: write 60*deg for 60 degrees
 
 function tokenize(src) {
   const tokens = [];

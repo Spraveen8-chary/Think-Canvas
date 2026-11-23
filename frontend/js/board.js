@@ -83,7 +83,8 @@ export class Board {
       }
       c.setPointerCapture(e.pointerId);
       if (this.tool === "hand" || this.spaceDown || e.button === 1) {
-        this.drag = { mode: "pan", x: e.clientX, y: e.clientY };
+        const item = this.tool === "hand" && !this.spaceDown && e.button === 0 ? this.itemAt(p) : null;
+        this.drag = item ? { mode: "move", item, from: p, x: item.x, y: item.y } : { mode: "pan", x: e.clientX, y: e.clientY };
       } else if (this.tool === "eraser") {
         this.drag = { mode: "erase", last: p, erased: false };
         this.eraseAt(p, p);
@@ -98,8 +99,16 @@ export class Board {
 
     c.addEventListener("pointermove", (e) => {
       const d = this.drag;
-      if (!d) return;
-      if (d.mode === "pan") {
+      if (!d) {
+        if (this.tool === "hand") c.style.cursor = this.itemAt(this.toWorld(e)) ? "move" : "grab";   // hint: this can be dragged
+        return;
+      }
+      if (d.mode === "move") {
+        const p = this.toWorld(e);
+        d.item.x = Math.round(d.x + p[0] - d.from[0]);
+        d.item.y = Math.round(d.y + p[1] - d.from[1]);
+        this.render();
+      } else if (d.mode === "pan") {
         this.view.x -= e.clientX - d.x;
         this.view.y -= e.clientY - d.y;
         d.x = e.clientX; d.y = e.clientY;
@@ -131,6 +140,9 @@ export class Board {
       } else if (d.mode === "erase" && d.erased) {
         this.onChange();
         this.onView();
+      } else if (d.mode === "move") {
+        this.onChange();                                   // save the new position
+        this.onView();
       }
     };
     c.addEventListener("pointerup", end);
@@ -142,6 +154,15 @@ export class Board {
       this.view.y += e.deltaY;
       this.render(); this.onView();
     }, { passive: false });
+  }
+
+  // The topmost movable item (answer, visual, typed text, image) under a canvas point.
+  itemAt(p) {
+    for (let i = this.items.length - 1; i >= 0; i--) {
+      const it = this.items[i];
+      if (it.type !== "stroke" && contains(this.boxOf(it), p)) return it;
+    }
+    return null;
   }
 
   // Object eraser: removes whatever the eraser touches.
@@ -252,7 +273,7 @@ export class Board {
       item.y = Math.round(pos.y);
       this.items.push(item);
       last = this.boxOf(item);
-      anchor = { x: writingBox.x, y: Math.max(writingBox.y + writingBox.h, last.y + last.h), w: writingBox.w, h: 0 };   // next block goes below
+      anchor = { x: writingBox.x, y: Math.max(writingBox.y + writingBox.h, last.y + last.h + 14), w: writingBox.w, h: 0 };   // next block goes below
     }
     if (last) this.revealBox(last);
     this.render();

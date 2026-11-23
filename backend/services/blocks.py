@@ -102,13 +102,33 @@ def _draw(b):
     return {"t": "draw", "w": w, "h": h, "s": shapes} if shapes else None
 
 
+def _points(raw, limit=40):
+    """[[x, y], ...] with 2..limit numeric pairs, or None."""
+    if not isinstance(raw, list):
+        return None
+    pts = [[_num(p[0]), _num(p[1])] for p in raw[:limit] if isinstance(p, list) and len(p) == 2]
+    pts = [p for p in pts if None not in p]
+    return pts if len(pts) >= 2 else None
+
+
 def _anim(b):
     w, h = _num(b.get("w"), 120, 700, 400), _num(b.get("h"), 120, 700, 260)
-    objs, ids = [], set()
+    objs, ids, paths = [], set(), set()
     for o in (b.get("o") or [])[:24]:
         if not isinstance(o, dict) or not isinstance(o.get("id"), str) or o["id"] in ids:
             continue
         kind, out = o.get("type"), {"id": o["id"][:20], "type": o.get("type")}
+        if kind == "path":                                   # a curve the AI draws once; objects can follow it
+            pts = _points(o.get("points"))
+            if pts:
+                out["points"] = pts
+                for key in ("fill", "stroke"):
+                    if _color(o.get(key)):
+                        out[key] = o[key]
+                objs.append(out)
+                ids.add(out["id"])
+                paths.add(out["id"])
+            continue
         fields = {"circle": ("cx", "cy", "r"), "rect": ("x", "y", "w", "h"), "line": ("x1", "y1", "x2", "y2"), "text": ("x", "y")}.get(kind)
         if not fields:
             continue
@@ -146,6 +166,10 @@ def _anim(b):
             if not (isinstance(f, list) and isinstance(t, list) and len(f) == len(t) == 2 and None not in map(_num, f + t)):
                 continue
             out["from"], out["to"] = [_num(f[0]), _num(f[1])], [_num(t[0]), _num(t[1])]
+        elif kind == "follow":
+            if m.get("along") not in paths or m["target"] in paths:
+                continue
+            out["along"] = m["along"]
         elif kind == "pulse":
             out["from"], out["to"] = _num(m.get("from"), 0.1, 10, 1), _num(m.get("to"), 0.1, 10, 1.3)
         elif kind != "spin":

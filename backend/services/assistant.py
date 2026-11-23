@@ -21,6 +21,7 @@ from .library_service import LibraryService
 from .llm import LLMError, LLMProvider, LLMReply
 
 log = logging.getLogger("tc.ask")
+RETRY_HINT = "\n(Your previous reply was not valid JSON. Reply again with ONE valid JSON object only, literal numbers only.)"
 
 
 @dataclass
@@ -47,14 +48,17 @@ class Assistant:
         self.provider, self.library = provider, library
 
     async def _ask(self, system: str, text: str, image: str | None) -> tuple[dict, LLMReply]:
-        try:
-            reply = await self.provider.complete(system, text, image)
-            return blocks.sanitize(blocks.extract_json(reply.text)), reply
-        except LLMError as e:
-            raise UpstreamError(str(e))
-        except ValueError as e:                                        # includes JSON errors
-            log.warning("ask.unparsable_reply %s", kv(provider=self.provider.name, error=e))
-            raise UpstreamError("The AI reply could not be understood. Please try again.")
+        spent = LLMReply("", 0, 0, self.provider.model)               # tokens of every attempt count
+        for attempt in (1, 2):
+            try:
+                reply = await self.provider.complete(system, text if attempt == 1 else text + RETRY_HINT, image)
+                spent = LLMReply(reply.text, spent.tokens_in + reply.tokens_in, spent.tokens_out + reply.tokens_out, reply.model)
+                return blocks.sanitize(blocks.extract_json(reply.text)), spent
+            except LLMError as e:
+                raise UpstreamError(str(e))
+            except ValueError as e:                                    # includes JSON errors
+                log.warning("ask.unparsable_reply %s", kv(provider=self.provider.name, attempt=attempt, error=e, reply_chars=len(reply.text)))
+        raise UpstreamError("The AI reply could not be understood. Please try again.")
 
     async def answer(self, user_id: ObjectId, image: str | None, typed: str, use_library: bool) -> Answer:
         started = time.perf_counter()
