@@ -24,6 +24,8 @@ COOKIE = "tc_session"
 _settings = get_settings()
 auth_limiter = RateLimiter(_settings.auth_rate_per_min, label="login attempts")
 ask_limiter = RateLimiter(_settings.ask_rate_per_min, label="AI requests")
+stt_limiter = RateLimiter(_settings.ask_rate_per_min, label="speech-to-text requests")
+live_limiter = RateLimiter(5, label="live session requests")
 
 
 def settings() -> Settings:

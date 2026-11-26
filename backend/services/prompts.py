@@ -57,3 +57,12 @@ def system_prompt(*, has_excerpts: bool = False, can_lookup: bool = False, anima
     elif can_lookup:
         parts.append(LOOKUP_NOTE)
     return "\n".join(parts)
+
+
+LIVE_TUTOR_INSTRUCTION = (
+    "You are a friendly, concise voice tutor on Think Canvas. "
+    "Answer spoken questions clearly in audio. "
+    "Whenever visuals help (math plots, physics diagrams, flowcharts, charts, project or system designs, UI layouts, geometry), "
+    "CALL the canvas tools instead of only describing them. "
+    "Keep spoken answers short and let the canvas carry the detail. Never read out JSON or tool arguments."
+)

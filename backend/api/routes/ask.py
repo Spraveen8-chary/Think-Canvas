@@ -15,7 +15,11 @@ router = APIRouter(prefix="/api", tags=["ask"])
 
 @router.get("/config")
 def get_config(s: Settings = Depends(settings)):
-    return {"provider": s.provider, "autoAskDelayMs": s.auto_ask_delay_ms}
+    return {
+        "provider": s.provider,
+        "autoAskDelayMs": s.auto_ask_delay_ms,
+        "sttAutosubmitSilenceMs": s.stt_autosubmit_silence_ms,
+    }
 
 
 @router.post("/ask")

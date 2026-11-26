@@ -33,3 +33,18 @@ class AskIn(BaseModel):
     typed: str = Field(default="", max_length=2000)                    # typed question(s) near the writing
     canvas_id: str | None = None
     use_library: bool = True
+
+
+class SttTokenIn(BaseModel):
+    speech_model: str = Field(default="universal-streaming-multilingual", max_length=80)
+
+
+class LiveBlockIn(BaseModel):
+    name: str = Field(max_length=40)
+    args: dict = Field(default_factory=dict)
+
+
+class LiveHistoryIn(BaseModel):
+    canvas_id: str | None = None
+    transcript: list[dict] = Field(default_factory=list, max_length=200)
+    kinds: list[str] = Field(default_factory=list, max_length=50)

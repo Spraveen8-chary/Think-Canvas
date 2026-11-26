@@ -54,6 +54,11 @@ class Settings:
     auto_ask_delay_ms: int
     ask_rate_per_min: int          # AI calls per user per minute (protects your API budget)
     auth_rate_per_min: int         # login/register attempts per client per minute
+    # voice: AssemblyAI STT & Gemini Live
+    assemblyai_api_key: str
+    gemini_api_key: str
+    gemini_live_model: str
+    stt_autosubmit_silence_ms: int
 
 
 def get_settings() -> Settings:
@@ -78,4 +83,8 @@ def get_settings() -> Settings:
         auto_ask_delay_ms=_int("AUTO_ASK_DELAY_MS", 2500),
         ask_rate_per_min=_int("ASK_RATE_PER_MIN", 20),
         auth_rate_per_min=_int("AUTH_RATE_PER_MIN", 10),
+        assemblyai_api_key=_str("ASSEMBLYAI_API_KEY"),
+        gemini_api_key=_str("GEMINI_API_KEY"),
+        gemini_live_model=_str("GEMINI_LIVE_MODEL", "models/gemini-2.5-flash-native-audio-preview-12-2025"),
+        stt_autosubmit_silence_ms=_int("STT_AUTOSUBMIT_SILENCE_MS", 5000),
     )

@@ -15,6 +15,7 @@ log = logging.getLogger("tc.http")
 
 CSP = (
     "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; "
+    "connect-src 'self' wss://streaming.assemblyai.com wss://generativelanguage.googleapis.com; "
     "object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
 )
 WRITE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}

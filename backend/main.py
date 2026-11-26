@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-from .api.routes import ask, assets, auth, canvases, health, library
+from .api.routes import ask, assets, auth, canvases, health, library, live, stt
 from .core.config import FRONTEND, get_settings
 from .core.errors import install_error_handlers
 from .core.logging import kv, safe_host, setup_logging
@@ -45,7 +45,7 @@ def create_app() -> FastAPI:
     app.add_middleware(SecurityMiddleware)
     app.add_middleware(RequestContextMiddleware)          # added last = outermost: it sees every request
     install_error_handlers(app)
-    for module in (health, auth, canvases, assets, library, ask):
+    for module in (health, auth, canvases, assets, library, ask, stt, live):
         app.include_router(module.router)
     app.mount("/", StaticFiles(directory=FRONTEND, html=True), name="frontend")
     return app
