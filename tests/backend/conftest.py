@@ -22,6 +22,8 @@ def database():
     dbmod.set_db(d)
     deps.ask_limiter.reset()
     deps.auth_limiter.reset()
+    deps.stt_limiter.reset()
+    deps.live_limiter.reset()
     return d
 
 
