@@ -123,3 +123,17 @@ Everything else is stateless: sessions, canvases and history are in MongoDB.
 | Change what the AI is told | `backend/services/prompts.py` |
 | Change how passages are found | `repositories/library.py` (`search`) |
 | Add a setting | `core/config.py`, then `.env.example` |
+
+## Voice features and token flow
+Long-lived vendor keys (`ASSEMBLYAI_API_KEY`, `GEMINI_API_KEY`) stay on the server in `core/config.py` and are never sent to the browser or logged.
+
+1. **Live Speech-to-Text (`frontend/js/stt.js`, `services/stt.py`, `api/routes/stt.py`)**
+   - `POST /api/stt/token` (authenticated + rate-limited) mints a short-lived AssemblyAI v3 streaming token (`expires_in_seconds=300`) and returns `{token, ws_url, expires_in}`.
+   - The browser captures 16 kHz mono PCM16 via `frontend/js/pcm-worklet.js` (`AudioWorklet`) and streams ~50 ms binary frames directly to `wss://streaming.assemblyai.com/v3/ws`.
+   - `frontend/js/transcript.js` keeps finalized turns (`committedText`, keyed by `turn_order`) separate from the in-progress partial (`partialText`) so text never repeats and user edits are preserved. After `STT_AUTOSUBMIT_SILENCE_MS` (default 5000 ms) of silence, it submits through the standard `POST /api/ask` flow.
+   - For languages outside the 6-language streaming tier, `MediaRecorder` records audio and uploads to `POST /api/stt/transcribe`, which uses AssemblyAI `/v2/upload` + `/v2/transcript` (`language_detection: true`).
+
+2. **Live Session Voice Tutor (`frontend/js/live.js`, `services/live.py`, `api/routes/live.py`)**
+   - `POST /api/live/token` (authenticated + rate-limited) mints a single-use Gemini ephemeral token via `POST /v1alpha/auth_tokens` with `liveConnectConstraints` locking the model (`GEMINI_LIVE_MODEL`), `LIVE_TUTOR_INSTRUCTION`, `AUDIO` response modality, `sessionResumption`, `contextWindowCompression`, `inputAudioTranscription`/`outputAudioTranscription`, and canvas tool declarations.
+   - The browser connects directly to `BidiGenerateContentConstrained`, streams 16 kHz PCM16 audio, plays 24 kHz PCM responses through a gapless `AudioContext` queue (flushing immediately on `interrupted`), and transparently reconnects on `goAway` using `sessionResumptionUpdate` handles.
+   - Tool calls (`draw_text_note`, `draw_plot`, `draw_chart`, `draw_flow`, `draw_geometry`, `clear_canvas_area`) are validated server-side via `POST /api/live/blocks` (reusing `services/blocks.py`), rendered via `board.addBlocks`, and acknowledged with `toolResponse`. Session transcripts and drawn block kinds are saved to `history` via `POST /api/live/history`.

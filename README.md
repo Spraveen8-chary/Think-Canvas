@@ -32,6 +32,8 @@ Put your AI key in `.env` (see "Keys"). The server listens on 127.0.0.1 only.
 | **Library** | Add textbooks / PDFs. Questions are answered from them, with page numbers |
 | **Find my work** (or `Home`) | Jumps to your latest writing; press again for the next spot. A "Back to your work" button appears when you scroll away from everything |
 | **History** | Everything you asked, with answers and token counts |
+| **Mic** (Speech-to-Text) | Speak your question live (AssemblyAI); auto-sends after 5 s of silence onto the canvas |
+| **Live Session** | Real-time voice tutor (Gemini Live) that answers in audio and draws visuals on the canvas |
 | **Eraser** removes what it touches. **Move** (or hold Space, or scroll) pans. `Ctrl+Z` undoes | |
 
 ## Keys: the `.env` file
@@ -43,6 +45,10 @@ Put your AI key in `.env` (see "Keys"). The server listens on 127.0.0.1 only.
 | `openai` | `OPENAI_API_KEY`, `OPENAI_MODEL`. A custom `OPENAI_BASE_URL` (Ollama, LM Studio) needs no key |
 | `anthropic` | `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` |
 | `claude-cli`, `codex-cli` | nothing: log in to the `claude` / `codex` command first |
+
+Optional voice keys:
+- `ASSEMBLYAI_API_KEY`: enables **Mic** (live speech-to-text via AssemblyAI Universal-Streaming v3, plus pre-recorded fallback). Streaming supports Auto-detect across **English, Spanish, French, German, Italian, and Portuguese** (`universal-streaming-multilingual`); all other languages (Hindi, Arabic, Japanese, Korean, Mandarin, Russian, etc., up to 99 languages) automatically use the pre-recorded `/api/stt/transcribe` fallback with `language_detection`.
+- `GEMINI_API_KEY` and `GEMINI_LIVE_MODEL`: enables **Live Session** voice tutor (Gemini Live API native audio + canvas tool calling).
 
 Restart after editing `.env`. `.env` is git-ignored.
 
