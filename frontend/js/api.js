@@ -38,4 +38,15 @@ export const api = {
   uploadDocument: (file) => { const f = new FormData(); f.append("file", file); return call("/api/documents", "POST", f); },
   setDocumentActive: (id, active) => call(`/api/documents/${id}`, "PUT", { active }),
   deleteDocument: (id) => call(`/api/documents/${id}`, "DELETE"),
+  // voice STT & Gemini Live
+  sttToken: () => call("/api/stt/token", "POST"),
+  sttTranscribe: (blob, language) => {
+    const f = new FormData();
+    f.append("file", blob, "recording.webm");
+    f.append("language", language || "auto");
+    return call("/api/stt/transcribe", "POST", f);
+  },
+  liveToken: () => call("/api/live/token", "POST"),
+  liveBlock: (name, args) => call("/api/live/blocks", "POST", { name, args }),
+  liveHistory: (canvasId, transcript, kinds) => call("/api/live/history", "POST", { canvas_id: canvasId, transcript, kinds }),
 };

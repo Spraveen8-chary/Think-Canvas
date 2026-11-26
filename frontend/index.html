@@ -46,17 +46,82 @@
           </select>
         </div>
         <button id="askNow" class="btn primary">Answer now</button>
+        <div class="group">
+          <button id="micToggle" class="btn" title="Live speech-to-text (AssemblyAI)">Mic</button>
+          <button id="liveToggle" class="btn" title="Start a Live Session voice tutor (Gemini Live)">Live Session</button>
+        </div>
         <span id="status" role="status"></span>
       </header>
 
-      <div class="stage">
-        <canvas id="board" role="img" aria-label="Drawing canvas. Use the Type tool to type a question instead of drawing."></canvas>
-        <div id="hint" class="hint">
-          <strong>Write or type a question, or add an image</strong>
-          <span>Pause for a moment and Think Canvas answers next to it. Try: "plot sin x", "flowchart of login", "animate earth orbiting the sun".</span>
+      <section id="sttPanel" class="voice-panel" hidden aria-label="Speech to text">
+        <div class="voice-head">
+          <strong>Speech-to-Text</strong>
+          <span id="sttState" class="badge" data-state="idle">Idle</span>
+          <span id="sttMode" class="note">Mode: Live streaming</span>
+          <div class="voice-controls">
+            <select id="sttLang" aria-label="Speech language">
+              <option value="auto">Auto-detect (Streaming: EN/ES/FR/DE/IT/PT)</option>
+              <option value="en">English (Streaming)</option>
+              <option value="es">Spanish (Streaming)</option>
+              <option value="fr">French (Streaming)</option>
+              <option value="de">German (Streaming)</option>
+              <option value="it">Italian (Streaming)</option>
+              <option value="pt">Portuguese (Streaming)</option>
+              <option value="hi">Hindi (Pre-recorded fallback)</option>
+              <option value="ar">Arabic (Pre-recorded fallback)</option>
+              <option value="ja">Japanese (Pre-recorded fallback)</option>
+              <option value="ko">Korean (Pre-recorded fallback)</option>
+              <option value="zh">Mandarin (Pre-recorded fallback)</option>
+              <option value="ru">Russian (Pre-recorded fallback)</option>
+              <option value="ta">Tamil (Pre-recorded fallback)</option>
+              <option value="te">Telugu (Pre-recorded fallback)</option>
+              <option value="nl">Dutch (Pre-recorded fallback)</option>
+              <option value="tr">Turkish (Pre-recorded fallback)</option>
+              <option value="fallback-auto">Other / All 99 languages (Pre-recorded auto-detect)</option>
+            </select>
+            <label class="chk"><input id="sttAutoSubmit" type="checkbox" checked> Auto-send</label>
+            <select id="sttSilenceMs" aria-label="Silence timeout before auto-send">
+              <option value="3000">3 s</option>
+              <option value="5000">5 s</option>
+              <option value="8000">8 s</option>
+            </select>
+            <span id="sttCountdown" class="countdown" hidden></span>
+            <button id="sttConnect" class="btn primary">Connect</button>
+            <button id="sttSend" class="btn">Send</button>
+            <button id="sttClear" class="btn">Clear</button>
+            <button id="sttClose" class="btn" title="Close panel" aria-label="Close speech panel">×</button>
+          </div>
         </div>
-        <button id="backPill" class="pill" hidden>↩ Back to your work</button>
-        <div class="timer"><span id="timerBar"></span></div>
+        <div class="stt-body">
+          <textarea id="sttText" rows="2" dir="auto" placeholder="Speak after clicking Connect, or type/edit here…" aria-label="Live transcript"></textarea>
+          <div id="sttPartial" class="stt-partial" dir="auto" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <div class="workspace">
+        <div class="stage">
+          <canvas id="board" role="img" aria-label="Drawing canvas. Use the Type tool to type a question instead of drawing."></canvas>
+          <div id="hint" class="hint">
+            <strong>Write or type a question, or add an image</strong>
+            <span>Pause for a moment and Think Canvas answers next to it. Try: "plot sin x", "flowchart of login", "animate earth orbiting the sun".</span>
+          </div>
+          <button id="backPill" class="pill" hidden>↩ Back to your work</button>
+          <div class="timer"><span id="timerBar"></span></div>
+        </div>
+
+        <aside id="livePanel" class="live-panel" hidden aria-label="Live Session voice tutor">
+          <div class="live-head">
+            <div>
+              <strong>Live Tutor</strong>
+              <span id="liveState" class="badge" data-state="ended">Ended</span>
+            </div>
+            <div class="live-actions">
+              <button id="liveMute" class="btn" disabled>Mute</button>
+              <button id="liveEnd" class="btn danger" disabled>End</button>
+            </div>
+          </div>
+          <div id="liveTranscript" class="live-transcript" aria-live="polite"></div>
+        </aside>
       </div>
     </main>
   </div>

@@ -8,6 +8,8 @@ import { renderSidebar } from "./sidebar.js";
 import { union } from "./geometry.js";
 import { shrinkImage } from "./imaging.js";
 import { library, initLibrary, initHistory, initAccount, initDialogClose } from "./dialogs.js";
+import { initStt } from "./stt.js";
+import { initLiveSession } from "./live.js";
 
 const $ = (id) => document.getElementById(id);
 const board = new Board($("board"));
@@ -267,6 +269,34 @@ $("newCanvas").onclick = newCanvas;
   initLibrary();
   initHistory();
   initAccount(user, (name) => { $("userName").textContent = name; });
+  initStt({
+    elements: {
+      panel: $("sttPanel"), toggleBtn: $("micToggle"), closeBtn: $("sttClose"),
+      connectBtn: $("sttConnect"), sendBtn: $("sttSend"), clearBtn: $("sttClear"),
+      langSelect: $("sttLang"), autoCheck: $("sttAutoSubmit"), silenceSelect: $("sttSilenceMs"),
+      stateBadge: $("sttState"), modeNote: $("sttMode"), countdownEl: $("sttCountdown"),
+      textarea: $("sttText"), partialEl: $("sttPartial"),
+    },
+    defaultSilenceMs: cfg.sttAutosubmitSilenceMs || 5000,
+    store,
+    onSubmitText: async (text) => {
+      const v = board.viewBox();
+      const item = board.addText(text, v.x + 60, v.y + 60);
+      await ask(board.boxOf(item));
+    },
+  });
+  initLiveSession({
+    elements: {
+      panel: $("livePanel"), toggleBtn: $("liveToggle"), stateBadge: $("liveState"),
+      muteBtn: $("liveMute"), endBtn: $("liveEnd"), transcriptEl: $("liveTranscript"),
+    },
+    onDrawBlock: (block) => {
+      const v = board.viewBox();
+      board.addBlocks([block], { x: v.x + 40, y: v.y + 40, w: 0, h: 0 });
+    },
+    onClearCanvas: () => { resetPending(); board.clear(); },
+    getCanvasId: () => canvasId,
+  });
   const list = await refreshList();
   list.length ? openCanvas(list[0].id) : newCanvas();
 })().catch((e) => setStatus(e.message, "error"));
