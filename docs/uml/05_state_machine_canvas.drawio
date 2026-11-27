@@ -1,0 +1,66 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="state_machine" name="State Machine - Canvas Session">
+    <mxGraphModel dx="1100" dy="750" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="750" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="State Machine Diagram: Canvas Input &amp; AI Request Lifecycle (main.js / Board)" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="15" width="540" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Initial -->
+        <mxCell id="s_init" value="" style="ellipse;whiteSpace=wrap;html=0;aspect=fixed;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="80" y="210" width="20" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- States -->
+        <mxCell id="s_locked" value="Locked&#xa;&#xa;entry / board.locked = true" style="rounded=1;whiteSpace=wrap;html=0;arcSize=15;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="150" y="190" width="180" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s_idle" value="Idle&#xa;&#xa;entry / dirty = null, busy = false" style="rounded=1;whiteSpace=wrap;html=0;arcSize=15;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="410" y="190" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s_drawing" value="Drawing / Typing&#xa;&#xa;do / track strokes, cancelTimer()" style="rounded=1;whiteSpace=wrap;html=0;arcSize=15;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="720" y="190" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s_waiting" value="WaitingForPause&#xa;&#xa;entry / showCountdown(true),&#xa;        armTimer(2500ms)&#xa;exit / cancelTimer()" style="rounded=1;whiteSpace=wrap;html=0;arcSize=15;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="710" y="340" width="220" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s_asking" value="AskingAI&#xa;&#xa;entry / busy = true, setStatus(&quot;Reading...&quot;)&#xa;do / POST /api/ask&#xa;exit / busy = false, spot = null" style="rounded=1;whiteSpace=wrap;html=0;arcSize=15;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="380" y="480" width="260" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s_error" value="Error&#xa;&#xa;entry / setStatus(err.message, &quot;error&quot;)" style="rounded=1;whiteSpace=wrap;html=0;arcSize=15;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="100" y="360" width="230" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Transitions -->
+        <mxCell id="t0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;strokeColor=#000000;" edge="1" parent="1" source="s_init" target="s_locked"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="t1" value="canvasLoaded" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="s_locked" target="s_idle"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="t2" value="onStrokeStart / onTextClick" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="s_idle" target="s_drawing"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="t3" value="onUserInput [auto == true]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="s_drawing" target="s_waiting"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="t4" value="onStrokeStart" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="s_waiting" target="s_drawing">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="970" y="380"/><mxPoint x="970" y="220"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="t5" value="timerExpired / askNowClicked" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="s_waiting" target="s_asking">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="820" y="520"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="t6" value="askNowClicked [auto == false]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="s_idle" target="s_asking"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="t7" value="200 OK / board.addBlocks()" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="s_asking" target="s_idle">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="460" y="360"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="t8" value="API / Network Error" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="s_asking" target="s_error">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="215" y="520"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="t9" value="onStrokeStart" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="s_error" target="s_idle">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="215" y="300"/><mxPoint x="440" y="300"/></Array></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

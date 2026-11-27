@@ -1,0 +1,137 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="seq_ask" name="Sequence - Ask AI Flow">
+    <mxGraphModel dx="1450" dy="950" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="950" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Sequence Diagram: Ask AI Flow (Pause Detection to Canvas Answer)" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="15" width="520" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="lf_user" value="User" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="90" height="820" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_board" value=":Board / main.js" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="180" y="60" width="120" height="820" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_api" value="ask.py&#xa;(/api/ask)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="360" y="60" width="110" height="820" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_asst" value=":Assistant" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="530" y="60" width="110" height="820" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_lib" value=":LibraryService" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="700" y="60" width="120" height="820" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_llm" value=":LLMProvider" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="880" y="60" width="110" height="820" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_blocks" value="blocks.py" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="60" width="100" height="820" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_hist" value=":HistoryRepository" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="60" width="130" height="820" as="geometry"/>
+        </mxCell>
+
+        <!-- Activation Bars -->
+        <mxCell id="act_board1" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="235" y="130" width="10" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_board2" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="235" y="210" width="10" height="620" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_api" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="410" y="240" width="10" height="530" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_asst" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="580" y="300" width="10" height="390" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_lib" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="755" y="320" width="10" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_llm" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="930" y="405" width="10" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_blocks" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="1085" y="465" width="10" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_hist" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="705" width="10" height="40" as="geometry"/>
+        </mxCell>
+
+        <!-- Alt Frame for Second Pass Lookup -->
+        <mxCell id="alt_lookup" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=0;width=45;height=20;fillColor=none;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="520" y="530" width="600" height="145" as="geometry"/>
+        </mxCell>
+        <mxCell id="alt_cond" value="[result.lookup and can_lookup]" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;fontFamily=Arial;fontSize=11;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="570" y="532" width="180" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Messages -->
+        <mxCell id="m1" value="1: draw/type on canvas" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="85" y="135" as="sourcePoint"/><mxPoint x="235" y="135" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m2" value="2: armTimer(2500ms)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="245" y="155" as="sourcePoint"/><mxPoint x="245" y="180" as="targetPoint"/><Array as="points"><mxPoint x="285" y="155"/><mxPoint x="285" y="180"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="m3" value="3: snapshot(visual, box)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="245" y="210" as="sourcePoint"/><mxPoint x="245" y="232" as="targetPoint"/><Array as="points"><mxPoint x="285" y="210"/><mxPoint x="285" y="232"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="m4" value="4: POST /api/ask (image, typed, use_library)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="245" y="250" as="sourcePoint"/><mxPoint x="410" y="250" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m5" value="5: ask_limiter.check(user_id)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="420" y="265" as="sourcePoint"/><mxPoint x="420" y="288" as="targetPoint"/><Array as="points"><mxPoint x="465" y="265"/><mxPoint x="465" y="288"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="m6" value="6: answer(user_id, image, typed, use_library)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="420" y="305" as="sourcePoint"/><mxPoint x="580" y="305" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m7" value="7: has_active(user_id) &amp; search(user_id, typed)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="590" y="330" as="sourcePoint"/><mxPoint x="755" y="330" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m8" value="8: excerpts[]" style="html=0;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="755" y="375" as="sourcePoint"/><mxPoint x="590" y="375" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m9" value="9: complete(system, user_text, image)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="590" y="410" as="sourcePoint"/><mxPoint x="930" y="410" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m10" value="10: LLMReply(text, tokens_in, tokens_out)" style="html=0;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="930" y="445" as="sourcePoint"/><mxPoint x="590" y="445" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m11" value="11: sanitize(extract_json(reply.text))" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="590" y="470" as="sourcePoint"/><mxPoint x="1085" y="470" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m12" value="12: {read, blocks, lookup}" style="html=0;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="1085" y="505" as="sourcePoint"/><mxPoint x="590" y="505" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <!-- Alt Messages -->
+        <mxCell id="m13" value="13: search(user_id, query + lookup)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="590" y="565" as="sourcePoint"/><mxPoint x="755" y="565" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m14" value="14: complete(system, text_with_excerpts, None)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="590" y="605" as="sourcePoint"/><mxPoint x="930" y="605" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m15" value="15: sanitize(extract_json(reply.text))" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="590" y="645" as="sourcePoint"/><mxPoint x="1085" y="645" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <!-- Return & History -->
+        <mxCell id="m16" value="16: Answer(read, blocks, tokens, sources)" style="html=0;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="580" y="690" as="sourcePoint"/><mxPoint x="420" y="690" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m17" value="17: add(user_id, entry)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="420" y="715" as="sourcePoint"/><mxPoint x="1250" y="715" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m18" value="18: HTTP 200 {read, blocks, tokens, sources}" style="html=0;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="410" y="765" as="sourcePoint"/><mxPoint x="245" y="765" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m19" value="19: addBlocks(res.blocks, box) &amp; render()" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="245" y="795" as="sourcePoint"/><mxPoint x="245" y="820" as="targetPoint"/><Array as="points"><mxPoint x="290" y="795"/><mxPoint x="290" y="820"/></Array></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

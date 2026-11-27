@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TrOCR Results Graphs - PNG Exporter</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f8fafc; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 30px; }
+    .card { background: #ffffff; padding: 20px; border: 1px solid #cbd5e1; border-radius: 8px; text-align: center; }
+    button { margin-top: 12px; padding: 10px 20px; background: #0f172a; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    button:hover { background: #334155; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img id="img7" src="fig7_trocr_accuracy.svg" width="800" height="500" alt="Fig 7 Accuracy"><br>
+    <button onclick="exportPng('fig7_trocr_accuracy.svg', 'fig7_trocr_accuracy.png', 2)">Download Fig 7 (Accuracy) as 2x PNG</button>
+  </div>
+  <div class="card">
+    <img id="img8" src="fig8_trocr_loss.svg" width="800" height="500" alt="Fig 8 Loss"><br>
+    <button onclick="exportPng('fig8_trocr_loss.svg', 'fig8_trocr_loss.png', 2)">Download Fig 8 (Loss) as 2x PNG</button>
+  </div>
+  <script>
+    function exportPng(svgPath, outName, scale) {
+      fetch(svgPath).then(r => r.text()).then(svgText => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 800 * scale;
+        canvas.height = 500 * scale;
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        const blob = new Blob([svgText], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        img.onload = () => {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          URL.revokeObjectURL(url);
+          const a = document.createElement('a');
+          a.download = outName;
+          a.href = canvas.toDataURL('image/png');
+          a.click();
+        };
+        img.src = url;
+      });
+    }
+  </script>
+</body>
+</html>
