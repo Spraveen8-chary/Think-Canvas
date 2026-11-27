@@ -1,0 +1,83 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="seq_library" name="Sequence - Library PDF Ingestion">
+    <mxGraphModel dx="1200" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="700" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Sequence Diagram: Textbook PDF Ingestion (RAG)" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="15" width="420" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Lifelines -->
+        <mxCell id="lf_ui" value="Browser&#xa;(dialogs.js)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="110" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_route" value="library.py&#xa;(/api/documents)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="210" y="60" width="120" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_svc" value=":LibraryService" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="390" y="60" width="120" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_rag" value="rag.py" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="570" y="60" width="100" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_repo" value=":LibraryRepository" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="730" y="60" width="130" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="lf_db" value="MongoDB" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=0;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="920" y="60" width="100" height="560" as="geometry"/>
+        </mxCell>
+
+        <!-- Activations -->
+        <mxCell id="act_ui" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="130" width="10" height="440" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_r" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="265" y="140" width="10" height="410" as="geometry"/>
+        </mxCell>
+        <mxCell id="act_s" value="" style="html=0;points=[];perimeter=orthogonalPerimeter;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="445" y="210" width="10" height="310" as="geometry"/>
+        </mxCell>
+
+        <!-- Messages -->
+        <mxCell id="m1" value="1: POST /api/documents (FormData file)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="100" y="145" as="sourcePoint"/><mxPoint x="265" y="145" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m2" value="2: validate size &lt;= 40 MB" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="275" y="165" as="sourcePoint"/><mxPoint x="275" y="190" as="targetPoint"/><Array as="points"><mxPoint x="320" y="165"/><mxPoint x="320" y="190"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="m3" value="3: asyncio.to_thread(ingest, user_id, name, data)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="275" y="215" as="sourcePoint"/><mxPoint x="445" y="215" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m4" value="4: extract_pages(filename, data)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="455" y="250" as="sourcePoint"/><mxPoint x="615" y="250" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m5" value="5: pages [(page_num, text)]" style="html=0;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="615" y="285" as="sourcePoint"/><mxPoint x="455" y="285" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m6" value="6: chunk_pages(pages)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="455" y="320" as="sourcePoint"/><mxPoint x="615" y="320" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m7" value="7: chunks [{page, text}]" style="html=0;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="615" y="355" as="sourcePoint"/><mxPoint x="455" y="355" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m8" value="8: add(user_id, name, len(pages), chunks)" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="455" y="395" as="sourcePoint"/><mxPoint x="790" y="395" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m9" value="9: documents.insert_one() &amp; chunks.insert_many()" style="html=0;verticalAlign=bottom;endArrow=block;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="800" y="425" as="sourcePoint"/><mxPoint x="965" y="425" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m10" value="10: doc" style="html=0;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="790" y="465" as="sourcePoint"/><mxPoint x="455" y="465" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m11" value="11: doc" style="html=0;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="445" y="505" as="sourcePoint"/><mxPoint x="275" y="505" as="targetPoint"/></mxGeometry>
+        </mxCell>
+        <mxCell id="m12" value="12: HTTP 201 {id, name, pages, chunks, active}" style="html=0;verticalAlign=bottom;endArrow=open;dashed=1;rounded=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="265" y="545" as="sourcePoint"/><mxPoint x="100" y="545" as="targetPoint"/></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

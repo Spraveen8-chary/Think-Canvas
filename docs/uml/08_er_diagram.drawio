@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="er_diagram" name="ER Diagram">
+    <mxGraphModel dx="1300" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1280" pageHeight="850" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Think Canvas - MongoDB Entity-Relationship (ER) Diagram" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="15" width="460" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- users -->
+        <mxCell id="ent_users" value="users" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="480" y="60" width="220" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_users_cols" value="PK  _id: ObjectId&#xa;      name: str&#xa;UK  email: str&#xa;      organisation: str&#xa;      password_hash: str&#xa;      created_at: datetime" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="ent_users">
+          <mxGeometry y="26" width="220" height="124" as="geometry"/>
+        </mxCell>
+
+        <!-- sessions -->
+        <mxCell id="ent_sessions" value="sessions" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="850" y="75" width="220" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_sessions_cols" value="PK  _id: ObjectId&#xa;UK  token_hash: str&#xa;FK  user_id: ObjectId&#xa;      expires_at: datetime (TTL)" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="ent_sessions">
+          <mxGeometry y="26" width="220" height="89" as="geometry"/>
+        </mxCell>
+
+        <!-- canvases -->
+        <mxCell id="ent_canvases" value="canvases" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="290" width="240" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_canvases_cols" value="PK  _id: ObjectId&#xa;FK  user_id: ObjectId&#xa;      title: str&#xa;      items: list[dict]&#xa;      updated_at: datetime" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="ent_canvases">
+          <mxGeometry y="26" width="240" height="99" as="geometry"/>
+        </mxCell>
+
+        <!-- assets -->
+        <mxCell id="ent_assets" value="assets" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="480" width="240" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_assets_cols" value="PK  _id: ObjectId&#xa;FK  user_id: ObjectId&#xa;      mime: str&#xa;      data: Binary&#xa;      created_at: datetime" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="ent_assets">
+          <mxGeometry y="26" width="240" height="99" as="geometry"/>
+        </mxCell>
+
+        <!-- history -->
+        <mxCell id="ent_history" value="history" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="470" y="310" width="240" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_history_cols" value="PK  _id: ObjectId&#xa;FK  user_id: ObjectId&#xa;FK  canvas_id: str|None&#xa;      ts: datetime&#xa;      read: str&#xa;      kinds: list[str]&#xa;      answer: str&#xa;      sources: list[str]&#xa;      tokens: dict" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="ent_history">
+          <mxGeometry y="26" width="240" height="154" as="geometry"/>
+        </mxCell>
+
+        <!-- documents -->
+        <mxCell id="ent_docs" value="documents" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="850" y="290" width="220" height="145" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_docs_cols" value="PK  _id: ObjectId&#xa;FK  user_id: ObjectId&#xa;      name: str&#xa;      pages: int&#xa;      chunks: int&#xa;      active: bool&#xa;      created_at: datetime" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="ent_docs">
+          <mxGeometry y="26" width="220" height="119" as="geometry"/>
+        </mxCell>
+
+        <!-- chunks -->
+        <mxCell id="ent_chunks" value="chunks" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="850" y="510" width="220" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="ent_chunks_cols" value="PK  _id: ObjectId&#xa;FK  doc_id: ObjectId&#xa;FK  user_id: ObjectId&#xa;      page: int&#xa;      text: str ($text index)" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="ent_chunks">
+          <mxGeometry y="26" width="220" height="94" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationships with Multiplicities -->
+        <mxCell id="r_u_sess" value="1                 0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ent_users" target="ent_sessions"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r_u_canv" value="1                             0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ent_users" target="ent_canvases">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="160" y="135"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="r_u_hist" value="1          0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ent_users" target="ent_history"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r_u_docs" value="1                        0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ent_users" target="ent_docs">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="760" y="160"/><mxPoint x="760" y="360"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="r_d_chunks" value="1         1..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ent_docs" target="ent_chunks"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="r_u_assets" value="1                        0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ent_users" target="ent_assets">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="370" y="180"/><mxPoint x="370" y="540"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="r_c_hist" value="1               0..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=none;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="ent_canvases" target="ent_history"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

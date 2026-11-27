@@ -1,0 +1,100 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="use_case" name="Use Case Diagram">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="Think Canvas - Use Case Diagram" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="320" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- System Boundary -->
+        <mxCell id="sys" value="Think Canvas System" style="shape=rect;html=0;whiteSpace=wrap;verticalAlign=top;align=center;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#000000;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="220" y="60" width="660" height="720" as="geometry"/>
+        </mxCell>
+
+        <!-- Actors -->
+        <mxCell id="actor_user" value="User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="70" y="340" width="30" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="actor_llm" value="LLM Provider&#xa;(OpenRouter / OpenAI / Anthropic / CLI)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="970" y="260" width="30" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="actor_mongo" value="MongoDB" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=0;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="970" y="540" width="30" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Use Cases: Auth -->
+        <mxCell id="uc_register" value="Register Account" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="280" y="100" width="160" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_login" value="Login / Logout" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="280" y="165" width="160" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_profile" value="Update Profile" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="280" y="230" width="160" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- Use Cases: Canvas -->
+        <mxCell id="uc_canvas_crud" value="Manage Canvases&#xa;(Create / Load / Save / Delete)" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="270" y="300" width="190" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_draw" value="Draw / Type / Erase / Move&#xa;on Canvas" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="270" y="375" width="190" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_import_img" value="Import / Upload Image" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="280" y="450" width="170" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- Use Cases: AI & RAG -->
+        <mxCell id="uc_ask" value="Ask AI&#xa;(Auto-Pause or Manual)" style="ellipse;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="550" y="340" width="180" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_render" value="Render Answer Blocks&#xa;(Text, Plot, Chart, Flow, Draw, Anim)" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="630" y="230" width="220" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_rag_search" value="Search Active Textbook&#xa;Passages (RAG)" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="640" y="450" width="190" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- Use Cases: Library & History -->
+        <mxCell id="uc_library" value="Manage Textbook Library&#xa;(Upload PDF, Toggle Active, Delete)" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="265" y="530" width="215" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_history" value="View Ask History &amp; Tokens" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="280" y="615" width="180" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="uc_find" value="Find My Work (Navigate)" style="ellipse;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="280" y="685" width="180" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- User Associations -->
+        <mxCell id="e_u_reg" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="actor_user" target="uc_register"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_u_log" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="actor_user" target="uc_login"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_u_prof" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="actor_user" target="uc_profile"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_u_canv" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="actor_user" target="uc_canvas_crud"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_u_draw" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="actor_user" target="uc_draw"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_u_img" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="actor_user" target="uc_import_img"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_u_lib" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="actor_user" target="uc_library"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_u_hist" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="actor_user" target="uc_history"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_u_find" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="actor_user" target="uc_find"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Include / Extend Relationships -->
+        <mxCell id="e_draw_ask" value="&lt;&lt;extend&gt;&gt;" style="endArrow=open;endSize=10;dashed=1;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="uc_ask" target="uc_draw"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_ask_render" value="&lt;&lt;include&gt;&gt;" style="endArrow=open;endSize=10;dashed=1;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="uc_ask" target="uc_render"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_ask_rag" value="&lt;&lt;extend&gt;&gt;" style="endArrow=open;endSize=10;dashed=1;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="uc_rag_search" target="uc_ask"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Secondary Actor Associations -->
+        <mxCell id="e_ask_llm" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="uc_ask" target="actor_llm"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_rag_mongo" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="uc_rag_search" target="actor_mongo"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_lib_mongo" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="uc_library" target="actor_mongo"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_canv_mongo" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="uc_canvas_crud" target="actor_mongo"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e_hist_mongo" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;rounded=0;" edge="1" parent="1" source="uc_history" target="actor_mongo"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

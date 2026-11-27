@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" style="background:#ffffff; font-family: Arial, Helvetica, sans-serif;">
+  <!-- Title -->
+  <text x="420" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#000000">TrOCR Fine-Tuning: Training vs. Validation Character Accuracy</text>
+
+  <!-- Plot Area Frame -->
+  <rect x="85" y="55" width="665" height="370" fill="#ffffff" stroke="#000000" stroke-width="1.2"/>
+
+  <!-- Horizontal Gridlines & Y-axis Labels (80% to 100%) -->
+  <!-- y = 425 (80%), y = 332.5 (85%), y = 240 (90%), y = 147.5 (95%), y = 55 (100%) -->
+  <g stroke="#d4d4d4" stroke-width="1" stroke-dasharray="3,3">
+    <line x1="85" y1="332.5" x2="750" y2="332.5"/>
+    <line x1="85" y1="240" x2="750" y2="240"/>
+    <line x1="85" y1="147.5" x2="750" y2="147.5"/>
+  </g>
+  <g font-size="12" fill="#000000" text-anchor="end">
+    <text x="75" y="429">80%</text>
+    <text x="75" y="336.5">85%</text>
+    <text x="75" y="244">90%</text>
+    <text x="75" y="151.5">95%</text>
+    <text x="75" y="59">100%</text>
+  </g>
+
+  <!-- Vertical Gridlines & X-axis Labels (Epochs 0 to 15) -->
+  <!-- x = 85 + (epoch / 15) * 665 -->
+  <g stroke="#d4d4d4" stroke-width="1" stroke-dasharray="3,3">
+    <line x1="218" y1="55" x2="218" y2="425"/>
+    <line x1="351" y1="55" x2="351" y2="425"/>
+    <line x1="484" y1="55" x2="484" y2="425"/>
+    <line x1="617" y1="55" x2="617" y2="425"/>
+  </g>
+  <g font-size="12" fill="#000000" text-anchor="middle">
+    <text x="85" y="445">0</text>
+    <text x="218" y="445">3</text>
+    <text x="351" y="445">6</text>
+    <text x="484" y="445">9</text>
+    <text x="617" y="445">12</text>
+    <text x="750" y="445">15</text>
+  </g>
+
+  <!-- Axis Titles -->
+  <text x="417" y="478" text-anchor="middle" font-size="13" font-weight="700" fill="#000000">Epoch</text>
+  <text x="24" y="240" text-anchor="middle" font-size="13" font-weight="700" fill="#000000" transform="rotate(-90 24 240)">Character Accuracy (%)</text>
+
+  <!-- Training Accuracy Curve (Blue) -->
+  <!-- Points (epoch 0..15): 82.0, 86.2, 89.5, 91.8, 93.4, 94.5, 95.3, 95.9, 96.3, 96.6, 96.8, 97.0, 97.1, 97.2, 97.3, 97.4 -->
+  <!-- y = 425 - ((val - 80) / 20) * 370 -->
+  <polyline fill="none" stroke="#1f77b4" stroke-width="2.5"
+    points="85,388 129.3,310.3 173.7,249.25 218,206.7 262.3,177.1 306.7,156.75 351,141.95 395.3,130.85 439.7,123.45 484,117.9 528.3,114.2 572.7,110.5 617,108.65 661.3,106.8 705.7,104.95 750,103.1"/>
+
+  <!-- Validation Accuracy Curve (Orange) -->
+  <!-- Points (epoch 0..15): 81.4, 85.1, 88.2, 90.4, 91.9, 92.9, 93.7, 94.2, 94.6, 94.9, 95.1, 95.2, 95.3, 95.35, 95.4, 95.42 -->
+  <polyline fill="none" stroke="#ff7f0e" stroke-width="2.5"
+    points="85,399.1 129.3,330.65 173.7,273.3 218,232.6 262.3,204.85 306.7,186.35 351,171.55 395.3,162.3 439.7,154.9 484,149.35 528.3,145.65 572.7,143.8 617,141.95 661.3,141.0 705.7,140.1 750,139.7"/>
+
+  <!-- Data Markers -->
+  <g fill="#1f77b4">
+    <circle cx="85" cy="388" r="3.5"/><circle cx="218" cy="206.7" r="3.5"/><circle cx="351" cy="141.95" r="3.5"/><circle cx="484" cy="117.9" r="3.5"/><circle cx="617" cy="108.65" r="3.5"/><circle cx="750" cy="103.1" r="3.5"/>
+  </g>
+  <g fill="#ff7f0e">
+    <circle cx="85" cy="399.1" r="3.5"/><circle cx="218" cy="232.6" r="3.5"/><circle cx="351" cy="171.55" r="3.5"/><circle cx="484" cy="149.35" r="3.5"/><circle cx="617" cy="141.95" r="3.5"/><circle cx="750" cy="139.7" r="3.5"/>
+  </g>
+
+  <!-- Legend Box (Bottom Right) -->
+  <rect x="520" y="330" width="210" height="70" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <line x1="535" y1="352" x2="565" y2="352" stroke="#1f77b4" stroke-width="2.5"/>
+  <circle cx="550" cy="352" r="3.5" fill="#1f77b4"/>
+  <text x="575" y="356" font-size="12" fill="#000000">Training Accuracy (97.4%)</text>
+  <line x1="535" y1="378" x2="565" y2="378" stroke="#ff7f0e" stroke-width="2.5"/>
+  <circle cx="550" cy="378" r="3.5" fill="#ff7f0e"/>
+  <text x="575" y="382" font-size="12" fill="#000000">Validation Accuracy (95.4%)</text>
+</svg>
