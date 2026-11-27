@@ -36,7 +36,7 @@ def extract_pages(filename: str, data: bytes) -> list[tuple[int, str]]:
 
 _SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9\"'(“])")
 _PARAGRAPH_BREAK = re.compile(r"\n\s*\n")
-MIN_PARAGRAPH = 200          # shorter paragraphs (headings, one-liners) are joined with the next one
+MIN_PARAGRAPH = 80           # only headings / one-liners are joined with the next paragraph (never merge real paragraphs of different topics)
 
 
 def _pack(paragraph: str) -> list[str]:

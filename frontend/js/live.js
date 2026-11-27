@@ -77,6 +77,15 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
     nextPlayTime = playCtx ? playCtx.currentTime : 0;
   }
 
+  // Without headphones the mic is paused while the tutor talks: say so, so the student knows why nothing is heard.
+  let speakingTimer = null;
+  function showTutorSpeaking() {
+    if (!active || headphonesBox?.checked) return;
+    setState("Live · tutor speaking, mic paused", "live");
+    clearTimeout(speakingTimer);
+    speakingTimer = setTimeout(() => { if (active && performance.now() >= tutorTalkingUntil) setState("Live", "live"); }, Math.max(60, tutorTalkingUntil - performance.now() + 60));
+  }
+
   function playPcm24k(b64Data) {
     if (!playCtx) playCtx = new AudioContext({ sampleRate: 24000 });
     if (playCtx.state === "suspended") playCtx.resume();
@@ -97,6 +106,7 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
     src.start(startAt);
     nextPlayTime = startAt + audioBuf.duration;
     tutorTalkingUntil = performance.now() + (nextPlayTime - playCtx.currentTime) * 1000 + 450;   // + a little tail for room echo
+    showTutorSpeaking();
     activeSources.add(src);
     src.onended = () => activeSources.delete(src);
   }
@@ -385,10 +395,10 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
     muteBtn.textContent = muted ? "Unmute" : "Mute";
   };
   endBtn.onclick = () => endSession();
-  document.getElementById("liveClose").onclick = async () => {   // close = end the session (if any) and hide the panel
-    if (active) await endSession();
+  document.getElementById("liveClose").onclick = async () => {   // close = hide the panel at once, then end the session (if any)
     panel.hidden = true;
     toggleBtn.classList.remove("on");
+    if (active) await endSession();
   };
 
   window.addEventListener("pagehide", () => { if (active) endSession(); });
