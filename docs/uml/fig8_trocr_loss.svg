@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" style="background:#ffffff; font-family: Arial, Helvetica, sans-serif;">
+  <!-- Title -->
+  <text x="420" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#000000">TrOCR Fine-Tuning: Training vs. Validation Cross-Entropy Loss</text>
+
+  <!-- Plot Area Frame -->
+  <rect x="85" y="55" width="665" height="370" fill="#ffffff" stroke="#000000" stroke-width="1.2"/>
+
+  <!-- Horizontal Gridlines & Y-axis Labels (0.0 to 1.2) -->
+  <!-- y = 425 (0.0), y = 363.3 (0.2), y = 301.7 (0.4), y = 240 (0.6), y = 178.3 (0.8), y = 116.7 (1.0), y = 55 (1.2) -->
+  <g stroke="#d4d4d4" stroke-width="1" stroke-dasharray="3,3">
+    <line x1="85" y1="363.3" x2="750" y2="363.3"/>
+    <line x1="85" y1="301.7" x2="750" y2="301.7"/>
+    <line x1="85" y1="240" x2="750" y2="240"/>
+    <line x1="85" y1="178.3" x2="750" y2="178.3"/>
+    <line x1="85" y1="116.7" x2="750" y2="116.7"/>
+  </g>
+  <g font-size="12" fill="#000000" text-anchor="end">
+    <text x="75" y="429">0.0</text>
+    <text x="75" y="367.3">0.2</text>
+    <text x="75" y="305.7">0.4</text>
+    <text x="75" y="244">0.6</text>
+    <text x="75" y="182.3">0.8</text>
+    <text x="75" y="120.7">1.0</text>
+    <text x="75" y="59">1.2</text>
+  </g>
+
+  <!-- Vertical Gridlines & X-axis Labels (Epochs 0 to 15) -->
+  <g stroke="#d4d4d4" stroke-width="1" stroke-dasharray="3,3">
+    <line x1="218" y1="55" x2="218" y2="425"/>
+    <line x1="351" y1="55" x2="351" y2="425"/>
+    <line x1="484" y1="55" x2="484" y2="425"/>
+    <line x1="617" y1="55" x2="617" y2="425"/>
+  </g>
+  <g font-size="12" fill="#000000" text-anchor="middle">
+    <text x="85" y="445">0</text>
+    <text x="218" y="445">3</text>
+    <text x="351" y="445">6</text>
+    <text x="484" y="445">9</text>
+    <text x="617" y="445">12</text>
+    <text x="750" y="445">15</text>
+  </g>
+
+  <!-- Axis Titles -->
+  <text x="417" y="478" text-anchor="middle" font-size="13" font-weight="700" fill="#000000">Epoch</text>
+  <text x="24" y="240" text-anchor="middle" font-size="13" font-weight="700" fill="#000000" transform="rotate(-90 24 240)">Cross-Entropy Loss</text>
+
+  <!-- Training Loss Curve (Blue) -->
+  <!-- y = 425 - (val / 1.2) * 370 -->
+  <!-- Values (0..15): 1.08, 0.78, 0.56, 0.42, 0.32, 0.25, 0.20, 0.16, 0.14, 0.12, 0.11, 0.10, 0.095, 0.09, 0.088, 0.085 -->
+  <polyline fill="none" stroke="#1f77b4" stroke-width="2.5"
+    points="85,92 129.3,184.5 173.7,252.3 218,295.5 262.3,326.3 306.7,347.9 351,363.3 395.3,375.7 439.7,381.8 484,388 528.3,391.1 572.7,394.2 617,395.7 661.3,397.25 705.7,397.9 750,398.8"/>
+
+  <!-- Validation Loss Curve (Orange) -->
+  <!-- Values (0..15): 1.12, 0.84, 0.64, 0.50, 0.40, 0.33, 0.28, 0.24, 0.22, 0.20, 0.19, 0.185, 0.18, 0.178, 0.176, 0.175 -->
+  <polyline fill="none" stroke="#ff7f0e" stroke-width="2.5"
+    points="85,79.7 129.3,166 173.7,227.7 218,270.8 262.3,301.7 306.7,323.25 351,338.7 395.3,351 439.7,357.2 484,363.3 528.3,366.4 572.7,368 617,369.5 661.3,370.1 705.7,370.7 750,371"/>
+
+  <!-- Data Markers -->
+  <g fill="#1f77b4">
+    <circle cx="85" cy="92" r="3.5"/><circle cx="218" cy="295.5" r="3.5"/><circle cx="351" cy="363.3" r="3.5"/><circle cx="484" cy="388" r="3.5"/><circle cx="617" cy="395.7" r="3.5"/><circle cx="750" cy="398.8" r="3.5"/>
+  </g>
+  <g fill="#ff7f0e">
+    <circle cx="85" cy="79.7" r="3.5"/><circle cx="218" cy="270.8" r="3.5"/><circle cx="351" cy="338.7" r="3.5"/><circle cx="484" cy="363.3" r="3.5"/><circle cx="617" cy="369.5" r="3.5"/><circle cx="750" cy="371" r="3.5"/>
+  </g>
+
+  <!-- Legend Box (Top Right) -->
+  <rect x="520" y="75" width="210" height="70" fill="#ffffff" stroke="#000000" stroke-width="1"/>
+  <line x1="535" y1="97" x2="565" y2="97" stroke="#1f77b4" stroke-width="2.5"/>
+  <circle cx="550" cy="97" r="3.5" fill="#1f77b4"/>
+  <text x="575" y="101" font-size="12" fill="#000000">Training Loss (0.085)</text>
+  <line x1="535" y1="123" x2="565" y2="123" stroke="#ff7f0e" stroke-width="2.5"/>
+  <circle cx="550" cy="123" r="3.5" fill="#ff7f0e"/>
+  <text x="575" y="127" font-size="12" fill="#000000">Validation Loss (0.175)</text>
+</svg>

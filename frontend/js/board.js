@@ -103,9 +103,11 @@ export class Board {
         this.drag = { mode: "erase", last: p, erased: false };
         this.eraseAt(p, p);
       } else {
+        // Begin a fresh stroke. Store the capturing pointerId so end() can
+        // ignore foreign pointers (e.g. a second finger on a touch screen).
         const stroke = { type: "stroke", points: [p] };
         this.items.push(stroke);
-        this.drag = { mode: "draw", stroke };
+        this.drag = { mode: "draw", stroke, pointerId: e.pointerId };
         this.onStrokeStart();
         this.render();
       }
@@ -133,21 +135,33 @@ export class Board {
         d.last = p;
       } else {
         const p = this.toWorld(e), last = d.stroke.points.at(-1);
-        if (Math.hypot(p[0] - last[0], p[1] - last[1]) >= 1.5) {
-          d.stroke.points.push(p);
-          this.render();
+        // getCoalescedEvents gives intermediate points between frames so fast
+        // strokes don't drop samples; fall back to the event itself if unavailable.
+        const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+        for (const ev of events) {
+          const q = this.toWorld(ev), prev = d.stroke.points.at(-1);
+          if (Math.hypot(q[0] - prev[0], q[1] - prev[1]) >= 1.5) {
+            d.stroke.points.push(q);
+          }
         }
+        if (d.stroke.points.at(-1) !== last) this.render();
       }
     });
 
-    const end = () => {
+    // end() receives the PointerEvent so we can guard against a foreign pointer id
+    // (e.g. a second touch finger accidentally firing pointerup for the drawing pointer).
+    const end = (e) => {
       const d = this.drag;
+      // Only end the active draw if the released pointer is the one we captured.
+      // e is undefined when called programmatically (e.g. pointercancel without id).
+      if (d && d.mode === "draw" && e && d.pointerId !== undefined && d.pointerId !== e.pointerId) return;
       this.drag = null;
       if (!d) return;
       if (d.mode === "draw") {
         const s = d.stroke;
         if (s.points.length === 1) s.points.push([s.points[0][0] + 0.1, s.points[0][1]]);
         s.points = s.points.map(([x, y]) => [Math.round(x * 10) / 10, Math.round(y * 10) / 10]);
+        this.render();                                     // clear the live in-progress path before firing callbacks
         this.onUserInput(this.boxOf(s));
         this.onChange();
         this.onView();

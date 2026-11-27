@@ -1,0 +1,267 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="class_diagram" name="Class Diagram">
+    <mxGraphModel dx="1500" dy="1050" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="Think Canvas - Backend &amp; Frontend Class Diagram" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="15" width="420" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== SERVICES LAYER ==================== -->
+        <!-- Assistant -->
+        <mxCell id="cls_assistant" value="Assistant" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="380" y="60" width="320" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_assistant_attr" value="- provider: LLMProvider&#xa;- library: LibraryService" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_assistant">
+          <mxGeometry y="26" width="320" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_assistant_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_assistant">
+          <mxGeometry y="66" width="320" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_assistant_meth" value="+ answer(user_id: ObjectId, image: str|None, typed: str, use_library: bool): Answer&#xa;- _ask(system: str, text: str, image: str|None): tuple[dict, LLMReply]" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_assistant">
+          <mxGeometry y="74" width="320" height="51" as="geometry"/>
+        </mxCell>
+
+        <!-- Answer dataclass -->
+        <mxCell id="cls_answer" value="&lt;&lt;dataclass&gt;&gt;&#xa;Answer" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=38;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="60" width="230" height="115" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_answer_attr" value="+ read: str&#xa;+ blocks: list[dict]&#xa;+ tokens: dict&#xa;+ sources: list[str]" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_answer">
+          <mxGeometry y="38" width="230" height="77" as="geometry"/>
+        </mxCell>
+
+        <!-- AuthService -->
+        <mxCell id="cls_auth" value="AuthService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="240" width="330" height="165" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_auth_attr" value="- users: UserRepository" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_auth">
+          <mxGeometry y="26" width="330" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_auth_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_auth">
+          <mxGeometry y="52" width="330" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_auth_meth" value="+ register(name: str, email: str, password: str, org: str): tuple&#xa;+ login(email: str, password: str): tuple&#xa;+ logout(token: str|None): None&#xa;+ user_for_token(token: str|None): dict|None&#xa;+ update_profile(user: dict, name: str, org: str): dict&#xa;- _new_session(user: dict): tuple[str, datetime]" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_auth">
+          <mxGeometry y="60" width="330" height="105" as="geometry"/>
+        </mxCell>
+
+        <!-- LibraryService -->
+        <mxCell id="cls_lib_svc" value="LibraryService" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="390" y="240" width="310" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_lib_svc_attr" value="- repo: LibraryRepository" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_lib_svc">
+          <mxGeometry y="26" width="310" height="26" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_lib_svc_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_lib_svc">
+          <mxGeometry y="52" width="310" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_lib_svc_meth" value="+ ingest(user_id: ObjectId, filename: str, data: bytes): dict&#xa;+ set_active(user_id: ObjectId, doc_id: ObjectId, active: bool): None&#xa;+ delete(user_id: ObjectId, doc_id: ObjectId): None&#xa;+ has_active(user_id: ObjectId): bool&#xa;+ search(user_id: ObjectId, query: str, k: int): list[dict]" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_lib_svc">
+          <mxGeometry y="60" width="310" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== LLM STRATEGY LAYER ==================== -->
+        <!-- LLMProvider (abstract) -->
+        <mxCell id="cls_llm" value="&lt;&lt;abstract&gt;&gt;&#xa;LLMProvider" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=38;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="860" y="55" width="310" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_llm_attr" value="+ name: str&#xa;+ model: str" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_llm">
+          <mxGeometry y="38" width="310" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_llm_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_llm">
+          <mxGeometry y="74" width="310" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_llm_meth" value="+ complete(system: str, text: str, image: str|None): LLMReply" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontStyle=2;fontColor=#000000;" vertex="1" parent="cls_llm">
+          <mxGeometry y="82" width="310" height="28" as="geometry"/>
+        </mxCell>
+
+        <!-- LLMReply -->
+        <mxCell id="cls_llm_reply" value="&lt;&lt;dataclass&gt;&gt;&#xa;LLMReply" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=38;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="55" width="180" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_llm_reply_attr" value="+ text: str&#xa;+ tokens_in: int&#xa;+ tokens_out: int&#xa;+ model: str" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_llm_reply">
+          <mxGeometry y="38" width="180" height="72" as="geometry"/>
+        </mxCell>
+
+        <!-- OpenAICompatible -->
+        <mxCell id="cls_openai" value="OpenAICompatible" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="760" y="230" width="240" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_openai_attr" value="+ base_url: str&#xa;+ api_key: str&#xa;+ max_tokens: int&#xa;+ json_mode: bool" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_openai">
+          <mxGeometry y="26" width="240" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_openai_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_openai">
+          <mxGeometry y="91" width="240" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_openai_meth" value="+ complete(system, text, image): LLMReply" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_openai">
+          <mxGeometry y="99" width="240" height="26" as="geometry"/>
+        </mxCell>
+
+        <!-- AnthropicProvider -->
+        <mxCell id="cls_anthropic" value="AnthropicProvider" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="230" width="210" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_anthropic_attr" value="+ api_key: str&#xa;+ max_tokens: int&#xa;+ timeout_s: int" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_anthropic">
+          <mxGeometry y="26" width="210" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_anthropic_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_anthropic">
+          <mxGeometry y="76" width="210" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_anthropic_meth" value="+ complete(system, text, image): LLMReply" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_anthropic">
+          <mxGeometry y="84" width="210" height="26" as="geometry"/>
+        </mxCell>
+
+        <!-- CliProvider -->
+        <mxCell id="cls_cli" value="CliProvider" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="230" width="210" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_cli_attr" value="+ command: str&#xa;+ timeout_s: int" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_cli">
+          <mxGeometry y="26" width="210" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_cli_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_cli">
+          <mxGeometry y="66" width="210" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_cli_meth" value="- _run(system, text, image): str&#xa;+ complete(system, text, image): LLMReply" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_cli">
+          <mxGeometry y="74" width="210" height="36" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== REPOSITORIES LAYER ==================== -->
+        <!-- UserRepository -->
+        <mxCell id="cls_user_repo" value="UserRepository" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="480" width="260" height="175" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_user_repo_attr" value="- users: Collection&#xa;- sessions: Collection" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_user_repo">
+          <mxGeometry y="26" width="260" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_user_repo_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_user_repo">
+          <mxGeometry y="62" width="260" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_user_repo_meth" value="+ by_email(email: str): dict|None&#xa;+ by_id(user_id: ObjectId): dict|None&#xa;+ insert(user: dict): ObjectId&#xa;+ update_profile(user_id, changes): None&#xa;+ add_session(token_hash, user_id, expires): None&#xa;+ session(token_hash: str): dict|None&#xa;+ delete_session(token_hash: str): None" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_user_repo">
+          <mxGeometry y="70" width="260" height="105" as="geometry"/>
+        </mxCell>
+
+        <!-- LibraryRepository -->
+        <mxCell id="cls_lib_repo" value="LibraryRepository" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="330" y="480" width="280" height="165" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_lib_repo_attr" value="- documents: Collection&#xa;- chunks: Collection" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_lib_repo">
+          <mxGeometry y="26" width="280" height="36" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_lib_repo_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_lib_repo">
+          <mxGeometry y="62" width="280" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_lib_repo_meth" value="+ for_user(user_id: ObjectId): list[dict]&#xa;+ add(user_id, name, pages, chunks): dict&#xa;+ set_active(user_id, doc_id, active): bool&#xa;+ delete(user_id, doc_id): bool&#xa;+ active_names(user_id): dict[ObjectId, str]&#xa;+ search(doc_ids, query, k): list[dict]" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_lib_repo">
+          <mxGeometry y="70" width="280" height="95" as="geometry"/>
+        </mxCell>
+
+        <!-- CanvasRepository -->
+        <mxCell id="cls_canv_repo" value="CanvasRepository" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="640" y="480" width="250" height="145" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_canv_repo_attr" value="- col: Collection" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_canv_repo">
+          <mxGeometry y="26" width="250" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_canv_repo_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_canv_repo">
+          <mxGeometry y="50" width="250" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_canv_repo_meth" value="+ for_user(user_id): list[dict]&#xa;+ create(user_id, title: str): ObjectId&#xa;+ get(user_id, canvas_id): dict|None&#xa;+ save(user_id, canvas_id, title, items): bool&#xa;+ delete(user_id, canvas_id): bool" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_canv_repo">
+          <mxGeometry y="58" width="250" height="87" as="geometry"/>
+        </mxCell>
+
+        <!-- HistoryRepository -->
+        <mxCell id="cls_hist_repo" value="HistoryRepository" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="920" y="480" width="220" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_hist_repo_attr" value="- col: Collection" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_hist_repo">
+          <mxGeometry y="26" width="220" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_hist_repo_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_hist_repo">
+          <mxGeometry y="50" width="220" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_hist_repo_meth" value="+ add(user_id, entry: dict): None&#xa;+ recent(user_id, limit: int): list[dict]" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_hist_repo">
+          <mxGeometry y="58" width="220" height="47" as="geometry"/>
+        </mxCell>
+
+        <!-- AssetRepository -->
+        <mxCell id="cls_asset_repo" value="AssetRepository" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="920" y="610" width="220" height="105" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_asset_repo_attr" value="- col: Collection" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_asset_repo">
+          <mxGeometry y="26" width="220" height="24" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_asset_repo_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_asset_repo">
+          <mxGeometry y="50" width="220" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_asset_repo_meth" value="+ add(user_id, mime, data): ObjectId&#xa;+ get(user_id, asset_id): dict|None" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_asset_repo">
+          <mxGeometry y="58" width="220" height="47" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== FRONTEND & CORE ==================== -->
+        <!-- Board (frontend/js/board.js) -->
+        <mxCell id="cls_board" value="Board (frontend/js)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="420" width="260" height="215" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_board_attr" value="+ canvas: HTMLCanvasElement&#xa;+ items: Array&#xa;+ view: Object&#xa;+ tool: String&#xa;+ spot: Object|null&#xa;+ locked: Boolean" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_board">
+          <mxGeometry y="26" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_board_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_board">
+          <mxGeometry y="116" width="260" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_board_meth" value="+ setTool(tool: String): void&#xa;+ addText(text, x, y): void&#xa;+ addImage(id, x, y, w, h): void&#xa;+ addBlocks(blocks, box): Boolean&#xa;+ snapshot(visual, box): String&#xa;+ render(): void" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_board">
+          <mxGeometry y="124" width="260" height="91" as="geometry"/>
+        </mxCell>
+
+        <!-- RateLimiter -->
+        <mxCell id="cls_ratelimit" value="RateLimiter" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="700" width="230" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_ratelimit_attr" value="+ limit: int&#xa;+ window_s: float&#xa;- _hits: dict[str, deque]" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_ratelimit">
+          <mxGeometry y="26" width="230" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_ratelimit_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=#000000;" vertex="1" parent="cls_ratelimit">
+          <mxGeometry y="76" width="230" height="8" as="geometry"/>
+        </mxCell>
+        <mxCell id="cls_ratelimit_meth" value="+ check(key: str): None&#xa;+ reset(): None" style="text;strokeColor=none;fillColor=#FFFFFF;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="cls_ratelimit">
+          <mxGeometry y="84" width="230" height="36" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== RELATIONSHIPS ==================== -->
+        <!-- Inheritance: Providers -> LLMProvider -->
+        <mxCell id="rel_oa_llm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=0;endSize=10;html=0;strokeColor=#000000;strokeWidth=1;" edge="1" parent="1" source="cls_openai" target="cls_llm">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_an_llm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=0;endSize=10;html=0;strokeColor=#000000;strokeWidth=1;" edge="1" parent="1" source="cls_anthropic" target="cls_llm">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_cli_llm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;endFill=0;endSize=10;html=0;strokeColor=#000000;strokeWidth=1;" edge="1" parent="1" source="cls_cli" target="cls_llm">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Dependency: LLMProvider -> LLMReply -->
+        <mxCell id="rel_llm_reply" value="&lt;&lt;returns&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;dashed=1;endSize=8;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cls_llm" target="cls_llm_reply">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Dependency: Assistant -> Answer -->
+        <mxCell id="rel_asst_ans" value="&lt;&lt;returns&gt;&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;dashed=1;endSize=8;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cls_assistant" target="cls_answer">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Associations: Services -> Providers & Repos -->
+        <mxCell id="rel_asst_llm" value="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endSize=8;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cls_assistant" target="cls_llm">
+          <mxGeometry x="0.8" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="rel_asst_lib" value="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endSize=8;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cls_assistant" target="cls_lib_svc">
+          <mxGeometry x="0.7" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="rel_auth_repo" value="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endSize=8;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cls_auth" target="cls_user_repo">
+          <mxGeometry x="0.7" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+        <mxCell id="rel_lib_repo" value="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=open;endSize=8;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="cls_lib_svc" target="cls_lib_repo">
+          <mxGeometry x="0.7" relative="1" as="geometry"><mxPoint as="offset"/></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

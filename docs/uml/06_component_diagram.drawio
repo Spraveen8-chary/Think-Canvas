@@ -1,0 +1,94 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="component_diagram" name="Component Diagram">
+    <mxGraphModel dx="1250" dy="820" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="820" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Think Canvas - Component Diagram" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="15" width="350" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Frontend Package -->
+        <mxCell id="pkg_fe" value="Frontend (Browser / ES Modules)" style="shape=folder;fontStyle=1;tabWidth=180;tabHeight=24;tabPosition=left;html=0;whiteSpace=wrap;verticalAlign=top;align=left;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="260" height="580" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_main" value="&lt;&lt;component&gt;&gt;&#xa;main.js&#xa;(Pause Timer &amp; App State)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="65" y="110" width="210" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_board" value="&lt;&lt;component&gt;&gt;&#xa;board.js&#xa;(Canvas, Pen, Snapshot)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="65" y="210" width="210" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_blocks" value="&lt;&lt;component&gt;&gt;&#xa;blocks.js&#xa;(Plot, Chart, Flow, Draw, Anim)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="65" y="310" width="210" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_dialogs" value="&lt;&lt;component&gt;&gt;&#xa;dialogs.js &amp; sidebar.js" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="65" y="410" width="210" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_api" value="&lt;&lt;component&gt;&gt;&#xa;api.js&#xa;(HTTP Fetch Client)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="65" y="510" width="210" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Backend Package -->
+        <mxCell id="pkg_be" value="Backend (Python + FastAPI)" style="shape=folder;fontStyle=1;tabWidth=180;tabHeight=24;tabPosition=left;html=0;whiteSpace=wrap;verticalAlign=top;align=left;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;spacingLeft=10;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="380" y="60" width="490" height="680" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_middleware" value="&lt;&lt;component&gt;&gt;&#xa;core/middleware.py&#xa;(SecurityMiddleware, RequestContext)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="410" y="110" width="430" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_routes" value="&lt;&lt;component&gt;&gt;&#xa;api/routes&#xa;(auth, canvases, assets, library, ask, health)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="410" y="200" width="430" height="65" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_assistant" value="&lt;&lt;component&gt;&gt;&#xa;Assistant + blocks.py + prompts.py" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="410" y="300" width="210" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="c_auth_lib" value="&lt;&lt;component&gt;&gt;&#xa;AuthService &amp; LibraryService&#xa;(+ rag.py)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="640" y="300" width="200" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_llm_reg" value="&lt;&lt;component&gt;&gt;&#xa;services/llm/registry.py&#xa;(OpenAICompatible, Anthropic, Cli)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="410" y="420" width="220" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_repos" value="&lt;&lt;component&gt;&gt;&#xa;repositories/&#xa;(Users, Canvases, Assets, Library, History)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="640" y="420" width="200" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_db" value="&lt;&lt;component&gt;&gt;&#xa;db.py (PyMongo)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="640" y="540" width="200" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="c_core" value="&lt;&lt;component&gt;&gt;&#xa;core/ (config, logging, security, ratelimit)" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="410" y="640" width="430" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- External Components -->
+        <mxCell id="ext_llm" value="&lt;&lt;external&gt;&gt;&#xa;OpenRouter / OpenAI / Anthropic" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="940" y="420" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="ext_mongo" value="&lt;&lt;database&gt;&gt;&#xa;MongoDB 8" style="shape=component;align=center;spacingLeft=20;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="940" y="540" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Dependencies -->
+        <mxCell id="d1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;" edge="1" parent="1" source="c_main" target="c_board"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="d2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;" edge="1" parent="1" source="c_board" target="c_blocks"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="d3" value="JSON / HTTP" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="c_api" target="c_middleware">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="340" y="545"/><mxPoint x="340" y="140"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="d4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;" edge="1" parent="1" source="c_middleware" target="c_routes"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="d5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;" edge="1" parent="1" source="c_routes" target="c_assistant"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="d6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;" edge="1" parent="1" source="c_routes" target="c_auth_lib"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="d7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;" edge="1" parent="1" source="c_assistant" target="c_llm_reg"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="d8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;" edge="1" parent="1" source="c_auth_lib" target="c_repos"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="d9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;" edge="1" parent="1" source="c_repos" target="c_db"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="d10" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="c_llm_reg" target="ext_llm"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="d11" value="TCP :27017" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;endArrow=open;strokeColor=#000000;fontFamily=Arial;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="c_db" target="ext_mongo"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,63 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="deployment_diagram" name="Deployment Diagram">
+    <mxGraphModel dx="1200" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="700" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Think Canvas - Deployment Diagram" style="text;html=0;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontFamily=Arial;fontSize=14;fontStyle=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="30" y="15" width="350" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Client Device -->
+        <mxCell id="node_client" value="&lt;&lt;device&gt;&gt;&#xa;Client Workstation" style="shape=cube;whiteSpace=wrap;html=0;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;size=14;verticalAlign=top;align=center;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontStyle=1;fontColor=#000000;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="230" height="240" as="geometry"/>
+        </mxCell>
+        <mxCell id="art_browser" value="&lt;&lt;executionEnvironment&gt;&gt;&#xa;Web Browser&#xa;(HTML5 Canvas + ES Modules)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="65" y="175" width="180" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Local App Host -->
+        <mxCell id="node_host" value="&lt;&lt;device&gt;&gt;&#xa;Local Application Host (127.0.0.1)" style="shape=cube;whiteSpace=wrap;html=0;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;size=14;verticalAlign=top;align=center;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontStyle=1;fontColor=#000000;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="360" y="70" width="370" height="500" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="env_uvicorn" value="&lt;&lt;executionEnvironment&gt;&gt;&#xa;Python 3 / Uvicorn ASGI Server (:3888)" style="rounded=0;whiteSpace=wrap;html=0;verticalAlign=top;align=center;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontStyle=1;fontColor=#000000;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="385" y="135" width="320" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="art_fastapi" value="&lt;&lt;artifact&gt;&gt;&#xa;backend/main.py (FastAPI App)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="415" y="185" width="260" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="art_static" value="&lt;&lt;artifact&gt;&gt;&#xa;frontend/ (Static HTML / JS / CSS)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="415" y="245" width="260" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="art_logs" value="&lt;&lt;artifact&gt;&gt;&#xa;logs/think-canvas.log &amp; .env" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="415" y="300" width="260" height="35" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="env_docker" value="&lt;&lt;executionEnvironment&gt;&gt;&#xa;Docker Container (think-canvas-mongo)" style="rounded=0;whiteSpace=wrap;html=0;verticalAlign=top;align=center;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontStyle=1;fontColor=#000000;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="385" y="390" width="320" height="145" as="geometry"/>
+        </mxCell>
+        <mxCell id="art_mongo" value="&lt;&lt;database&gt;&gt;&#xa;MongoDB 8 (:27017)&#xa;(db: think_canvas)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="425" y="440" width="240" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- External Cloud AI Node -->
+        <mxCell id="node_cloud" value="&lt;&lt;external node&gt;&gt;&#xa;Cloud AI Provider Endpoints" style="shape=cube;whiteSpace=wrap;html=0;boundedLbl=1;backgroundOutline=1;darkOpacity=0.05;darkOpacity2=0.1;size=14;verticalAlign=top;align=center;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontStyle=1;fontColor=#000000;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="830" y="135" width="270" height="210" as="geometry"/>
+        </mxCell>
+        <mxCell id="art_openrouter" value="OpenRouter API&#xa;(openrouter.ai/api/v1)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="860" y="200" width="210" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="art_vendors" value="OpenAI / Anthropic APIs" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#F5F5F5;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=12;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="860" y="265" width="210" height="45" as="geometry"/>
+        </mxCell>
+
+        <!-- Communication Paths -->
+        <mxCell id="conn_http" value="HTTP / JSON&#xa;(localhost:3888)" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="art_browser" target="env_uvicorn"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="conn_mongo" value="PyMongo TCP (:27017)" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="env_uvicorn" target="env_docker"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="conn_https" value="HTTPS / TLS&#xa;(httpx)" style="endArrow=none;html=0;strokeColor=#000000;strokeWidth=1;fontFamily=Arial;fontSize=11;fontColor=#000000;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="env_uvicorn" target="node_cloud"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
