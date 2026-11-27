@@ -5,6 +5,7 @@ pypdf
 httpx
 python-multipart
 python-dotenv
+websockets
 # tests only
 pytest
 mongomock

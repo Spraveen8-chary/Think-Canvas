@@ -160,17 +160,17 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
     }
   }
 
-  async function connectSocket({ token, model, ws_url }, resumeHandle = null) {
-    const url = `${ws_url}?access_token=${encodeURIComponent(token)}`;
-    ws = new WebSocket(url);
+  async function connectSocket(resumeHandle = null) {
+    const sock = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/api/live/ws`);
+    ws = sock;
+    let ready = false;                                   // true once Gemini confirmed the session
 
-    ws.onopen = async () => {
-      const setup = { model };
-      if (resumeHandle) setup.sessionResumption = { handle: resumeHandle };
-      ws.send(JSON.stringify({ setup }));
+    sock.onopen = () => {
+      sock.send(JSON.stringify({ start: true, resumeHandle }));   // the server builds the Gemini setup
     };
 
-    ws.onmessage = async (ev) => {
+    sock.onmessage = async (ev) => {
+      if (sock !== ws) return;                           // a replaced socket: ignore
       let raw = ev.data;
       if (raw instanceof Blob) raw = await raw.text();
       let msg;
@@ -179,9 +179,14 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
       resetIdleTimer();
 
       if (msg.setupComplete !== undefined) {
+        ready = true;
+        reconnectAttempts = 0;
         setState("Live", "live");
         muteBtn.disabled = false;
         endBtn.disabled = false;
+        if (!resumeHandle) {                             // brand-new session: Gemini speaks first
+          sock.send(JSON.stringify({ realtimeInput: { text: "Greet me in one short spoken sentence as my voice tutor and ask what I want to learn or design today. Do not draw anything on the canvas for the greeting." } }));
+        }
         return;
       }
 
@@ -228,25 +233,32 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
       }
     };
 
-    ws.onclose = () => {
-      if (userEnded || !active) return;
+    sock.onclose = (ev) => {
+      if (sock !== ws || userEnded || !active) return;
+      console.warn("Gemini Live socket closed", ev.code, ev.reason);
+      if (!ready) {                                      // never got going: show why instead of retrying forever
+        endSession(`Could not start the Gemini session (code ${ev.code}${ev.reason ? ": " + ev.reason : ""}).`);
+        return;
+      }
       reconnect();
     };
 
-    ws.onerror = () => {
-      if (!userEnded && active) setState("Error", "error");
+    sock.onerror = () => {
+      if (sock === ws && !userEnded && active) setState("Error", "error");
     };
   }
 
+  let reconnectAttempts = 0;
+
   async function reconnect() {
     if (!active || userEnded) return;
+    if (++reconnectAttempts > 3) return endSession("Connection to Gemini was lost.");
     setState("Reconnecting", "reconnecting");
-    try { ws?.close(); } catch {}
-    ws = null;
+    const old = ws;
+    ws = null;                                           // detach first so its onclose cannot trigger another reconnect
+    try { old?.close(); } catch {}
     try {
-      const creds = await api.liveToken();
-      modelName = creds.model;
-      await connectSocket(creds, sessionHandle);
+      await connectSocket(sessionHandle);
     } catch (err) {
       endSession(err.message || "Could not reconnect.");
     }
@@ -268,13 +280,17 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
     transcriptEl.innerHTML = "";
     setState("Connecting", "connecting");
 
+    // Create + resume the speaker context right now, inside the click: browsers keep audio contexts
+    // that are created later (e.g. when the first reply arrives) suspended, which sounds like "it doesn't speak".
+    if (!playCtx) playCtx = new AudioContext({ sampleRate: 24000 });
+    playCtx.resume().catch(() => {});
+    nextPlayTime = 0;
+
     try {
       mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true },
       });
-      const creds = await api.liveToken();
-      modelName = creds.model;
-      idleTimeoutMs = (creds.idle_timeout_s || 120) * 1000;
+      idleTimeoutMs = 120 * 1000;
 
       micCtx = new AudioContext();
       await micCtx.audioWorklet.addModule("/js/pcm-worklet.js");
@@ -291,9 +307,9 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
 
       active = true;
       clearTimeout(sessionTimer);
-      sessionTimer = setTimeout(() => endSession("Maximum session length reached."), (creds.max_session_s || 1800) * 1000);
+      sessionTimer = setTimeout(() => endSession("Maximum session length reached."), 1800 * 1000);
       resetIdleTimer();
-      await connectSocket(creds, null);
+      await connectSocket(null);
     } catch (err) {
       cleanupAudio();
       active = false;
@@ -346,6 +362,11 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
     muteBtn.textContent = muted ? "Unmute" : "Mute";
   };
   endBtn.onclick = () => endSession();
+  document.getElementById("liveClose").onclick = async () => {   // close = end the session (if any) and hide the panel
+    if (active) await endSession();
+    panel.hidden = true;
+    toggleBtn.classList.remove("on");
+  };
 
   window.addEventListener("pagehide", () => { if (active) endSession(); });
   window.addEventListener("beforeunload", () => { if (active) endSession(); });

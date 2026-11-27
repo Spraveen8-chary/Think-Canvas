@@ -52,4 +52,6 @@ class SecurityMiddleware(BaseHTTPMiddleware):
         response.headers.setdefault("Content-Security-Policy", CSP)
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("Referrer-Policy", "same-origin")
+        if not request.url.path.startswith("/api"):          # page, scripts, styles: always re-check, so updates show up
+            response.headers.setdefault("Cache-Control", "no-cache")
         return response

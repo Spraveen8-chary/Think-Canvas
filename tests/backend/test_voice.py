@@ -1,4 +1,5 @@
 from dataclasses import replace
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -40,7 +41,6 @@ def test_voice_endpoints_require_auth(client):
     for method, url in [
         ("post", "/api/stt/token"),
         ("post", "/api/stt/transcribe"),
-        ("post", "/api/live/token"),
         ("post", "/api/live/blocks"),
         ("post", "/api/live/history"),
     ]:
@@ -152,39 +152,31 @@ def test_stt_transcribe_fallback_and_validation(client, monkeypatch):
     assert captured["transcript_payload"]["language_detection"] is True
 
 
-def test_live_token_and_rate_limit(client, monkeypatch):
+def test_live_setup_is_built_on_the_server():
+    setup = live_svc.build_setup("models/gemini-3.1-flash-live-preview", "be a tutor")["setup"]
+    assert setup["model"] == "models/gemini-3.1-flash-live-preview"
+    assert setup["generationConfig"]["responseModalities"] == ["AUDIO"]
+    assert setup["tools"][0]["functionDeclarations"]
+    assert setup["sessionResumption"] == {}
+    assert live_svc.build_setup("m", "x", "h1")["setup"]["sessionResumption"] == {"handle": "h1"}
+
+
+def test_live_socket_requires_login(client):
+    from starlette.websockets import WebSocketDisconnect
+    with client.websocket_connect("/api/live/ws") as w:
+        with pytest.raises(WebSocketDisconnect) as e:
+            w.receive_text()
+    assert "log in" in (e.value.reason or "")
+
+
+def test_live_socket_needs_gemini_key(client, monkeypatch):
+    from starlette.websockets import WebSocketDisconnect
     register(client)
-    _patch_settings(monkeypatch, gemini_api_key="gem-secret", gemini_live_model="models/gemini-2.5-flash-native-audio-preview-12-2025")
-
-    captured = {}
-
-    class FakeClient:
-        def __init__(self, *a, **kw): pass
-        async def __aenter__(self): return self
-        async def __aexit__(self, *a): return False
-
-        async def post(self, url, headers=None, json=None):
-            captured["url"] = url
-            captured["headers"] = headers
-            captured["json"] = json
-            return _FakeResponse(200, {"name": "auth_tokens/eph_123"})
-
-    monkeypatch.setattr(live_svc.httpx, "AsyncClient", FakeClient)
-    r = client.post("/api/live/token")
-    assert r.status_code == 200
-    body = r.json()
-    assert body["token"] == "auth_tokens/eph_123"
-    assert body["model"] == "models/gemini-2.5-flash-native-audio-preview-12-2025"
-    assert "gem-secret" not in r.text
-    assert captured["headers"]["x-goog-api-key"] == "gem-secret"
-    assert captured["json"]["uses"] == 1
-    assert captured["json"]["liveConnectConstraints"]["config"]["responseModalities"] == ["AUDIO"]
-    assert captured["json"]["liveConnectConstraints"]["config"]["tools"][0]["functionDeclarations"]
-
-    # Rate limited after 5
-    for _ in range(4):
-        assert client.post("/api/live/token").status_code == 200
-    assert client.post("/api/live/token").status_code == 429
+    monkeypatch.setattr("backend.api.routes.live.get_settings", lambda: SimpleNamespace(gemini_api_key="", gemini_live_model="m"))
+    with client.websocket_connect("/api/live/ws") as w:
+        with pytest.raises(WebSocketDisconnect) as e:
+            w.receive_text()
+    assert "GEMINI_API_KEY" in (e.value.reason or "")
 
 
 def test_live_blocks_validation_and_history(client):

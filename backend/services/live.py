@@ -1,19 +1,12 @@
 """Gemini Live API service: ephemeral token minting and canvas tool-call validation."""
-from datetime import datetime, timedelta, timezone
 import logging
 
-import httpx
-
-from ..core.errors import BadRequest, RateLimited, UpstreamError
+from ..core.errors import BadRequest
 from . import blocks as block_svc
 
 log = logging.getLogger("tc.live")
 
-AUTH_TOKENS_URL = "https://generativelanguage.googleapis.com/v1alpha/auth_tokens"
-LIVE_WS_URL = (
-    "wss://generativelanguage.googleapis.com/ws/"
-    "google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContentConstrained"
-)
+LIVE_WS_URL = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent"
 MAX_SESSION_S = 1800
 IDLE_TIMEOUT_S = 120
 
@@ -91,8 +84,8 @@ CANVAS_TOOL_DECLARATIONS = [
                 "h": {"type": "NUMBER"},
                 "s": {
                     "type": "ARRAY",
-                    "items": {"type": "ARRAY"},
-                    "description": "Shapes: ['line',x1,y1,x2,y2], ['arrow',x1,y1,x2,y2], ['rect',x,y,w,h], ['circle',cx,cy,r], ['ellipse',cx,cy,rx,ry], ['text',x,y,'label']",
+                    "items": {"type": "ARRAY", "items": {"type": "STRING"}},
+                    "description": "Each shape is a list of strings (numbers written as text). Shapes:['line',x1,y1,x2,y2], ['arrow',x1,y1,x2,y2], ['rect',x,y,w,h], ['circle',cx,cy,r], ['ellipse',cx,cy,rx,ry], ['text',x,y,'label']",
                 },
             },
             "required": ["s"],
@@ -101,9 +94,20 @@ CANVAS_TOOL_DECLARATIONS = [
     {
         "name": "clear_canvas_area",
         "description": "Clear the canvas when the user explicitly asks to start fresh.",
-        "parameters": {"type": "OBJECT", "properties": {}},
     },
 ]
+
+def _coerce_shapes(shapes):
+    """Gemini sends shape items as strings; turn numeric ones back into numbers."""
+    def num(v):
+        try:
+            return float(v) if isinstance(v, str) else v
+        except ValueError:
+            return v
+    if not isinstance(shapes, list):
+        return shapes
+    return [[sh[0], *[num(v) for v in sh[1:]]] if isinstance(sh, list) and sh else sh for sh in shapes]
+
 
 _TOOL_BLOCK_MAP = {
     "draw_text_note": lambda a: {"t": "text", "text": a.get("text", "")},
@@ -113,7 +117,7 @@ _TOOL_BLOCK_MAP = {
         "values": a.get("values"), "title": a.get("title", ""),
     },
     "draw_flow": lambda a: {"t": "flow", "dir": a.get("dir", "down"), "nodes": a.get("nodes"), "edges": a.get("edges")},
-    "draw_geometry": lambda a: {"t": "draw", "w": a.get("w", 320), "h": a.get("h", 220), "s": a.get("s")},
+    "draw_geometry": lambda a: {"t": "draw", "w": a.get("w", 320), "h": a.get("h", 220), "s": _coerce_shapes(a.get("s"))},
     "draw_animation": lambda a: {
         "t": "anim", "w": a.get("w", 400), "h": a.get("h", 260),
         "ms": a.get("ms", 4000), "o": a.get("o"), "m": a.get("m"),
@@ -134,59 +138,16 @@ def validate_tool_block(name: str, args: dict) -> dict:
     return {"action": "draw", "block": sanitized["blocks"][0]}
 
 
-def _iso_utc(dt: datetime) -> str:
-    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-async def mint_live_token(api_key: str, model: str, system_instruction: str) -> dict:
-    """Mint a single-use, short-lived Gemini ephemeral token locked to our model and tools."""
-    if not api_key:
-        raise BadRequest("Live Session is not configured (missing GEMINI_API_KEY)")
-
-    now = datetime.now(timezone.utc)
-    payload = {
-        "uses": 1,
-        "expireTime": _iso_utc(now + timedelta(seconds=MAX_SESSION_S)),
-        "newSessionExpireTime": _iso_utc(now + timedelta(minutes=2)),
-        "liveConnectConstraints": {
-            "model": model,
-            "config": {
-                "responseModalities": ["AUDIO"],
-                "systemInstruction": {"parts": [{"text": system_instruction}]},
-                "sessionResumption": {},
-                "contextWindowCompression": {"slidingWindow": {}},
-                "inputAudioTranscription": {},
-                "outputAudioTranscription": {},
-                "tools": [{"functionDeclarations": CANVAS_TOOL_DECLARATIONS}],
-            },
-        },
+def build_setup(model: str, system_instruction: str, resume_handle: str | None = None) -> dict:
+    """The first message sent to Gemini Live. Built on the server so the browser cannot change it."""
+    setup = {
+        "model": model if model.startswith(("models/", "tunedModels/")) else f"models/{model}",   # Gemini wants the "models/" prefix
+        "generationConfig": {"responseModalities": ["AUDIO"]},
+        "systemInstruction": {"parts": [{"text": system_instruction}]},
+        "sessionResumption": {"handle": resume_handle} if resume_handle else {},
+        "contextWindowCompression": {"slidingWindow": {}},
+        "inputAudioTranscription": {},
+        "outputAudioTranscription": {},
+        "tools": [{"functionDeclarations": CANVAS_TOOL_DECLARATIONS}],
     }
-
-    try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            res = await client.post(
-                AUTH_TOKENS_URL,
-                headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
-                json=payload,
-            )
-    except httpx.HTTPError as e:
-        log.warning("live.token_network_error err=%s", e.__class__.__name__)
-        raise UpstreamError("Could not reach Gemini Live service") from e
-
-    if res.status_code == 429:
-        raise RateLimited("Gemini Live quota reached. Try again shortly.")
-    if res.status_code >= 400:
-        log.warning("live.token_vendor_error status=%s", res.status_code)
-        raise UpstreamError("Live Session could not be started right now")
-
-    token_name = res.json().get("name")
-    if not token_name:
-        raise UpstreamError("Gemini Live service returned an invalid token")
-
-    return {
-        "token": token_name,
-        "model": model,
-        "ws_url": LIVE_WS_URL,
-        "max_session_s": MAX_SESSION_S,
-        "idle_timeout_s": IDLE_TIMEOUT_S,
-    }
+    return {"setup": setup}

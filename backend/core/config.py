@@ -69,7 +69,7 @@ def get_settings() -> Settings:
         mongo_uri=_str("MONGODB_URI", "mongodb://localhost:27017"),
         mongo_db=_str("MONGODB_DB", "think_canvas"),
         provider=_str("LLM_PROVIDER", "openai").lower(),
-        max_output_tokens=_int("MAX_OUTPUT_TOKENS", 700),
+        max_output_tokens=_int("MAX_OUTPUT_TOKENS", 2500),
         llm_timeout_s=_int("LLM_TIMEOUT_S", 90),
         openai_api_key=_str("OPENAI_API_KEY"),
         openai_model=_str("OPENAI_MODEL", "gpt-4o"),
@@ -85,6 +85,6 @@ def get_settings() -> Settings:
         auth_rate_per_min=_int("AUTH_RATE_PER_MIN", 10),
         assemblyai_api_key=_str("ASSEMBLYAI_API_KEY"),
         gemini_api_key=_str("GEMINI_API_KEY"),
-        gemini_live_model=_str("GEMINI_LIVE_MODEL", "models/gemini-2.5-flash-native-audio-preview-12-2025"),
+        gemini_live_model=_str("GEMINI_LIVE_MODEL", "models/gemini-3.8-live"),
         stt_autosubmit_silence_ms=_int("STT_AUTOSUBMIT_SILENCE_MS", 5000),
     )
