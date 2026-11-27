@@ -3,7 +3,8 @@ import json
 import math
 import re
 
-MAX_BLOCKS = 4
+MAX_BLOCKS = 6
+TEXT_LIMIT = 1200
 EXPR_RE = re.compile(r"^[0-9a-zA-Z_+\-*/^().,\s]{1,120}$")
 COLOR_RE = re.compile(r"^(#[0-9a-fA-F]{3,8}|[a-zA-Z]{3,20})$")
 
@@ -34,12 +35,20 @@ def _color(v):
 
 
 def _text(b):
-    t = _clean(b.get("text", ""), 700)
+    t = _clean(b.get("text", ""), TEXT_LIMIT)
     return {"t": "text", "text": t} if t else None
 
 
+PLOT_WORDS = {"x", "pi", "e", "deg", "sin", "cos", "tan", "sqrt", "abs", "exp", "ln"}
+
+
+def _only_x(expr):
+    """A plot must be a function of x alone; any other name (y, c, a...) can't be drawn."""
+    return all(w in PLOT_WORDS for w in re.findall(r"[a-zA-Z_]+", expr))
+
+
 def _plot(b):
-    fs = [f for f in (b.get("f") or []) if isinstance(f, str) and EXPR_RE.match(f)][:4]
+    fs = [f for f in (b.get("f") or []) if isinstance(f, str) and EXPR_RE.match(f) and _only_x(f)][:4]
     if not fs:
         return None
     x = b.get("x") or [-10, 10]

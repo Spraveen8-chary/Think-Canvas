@@ -31,7 +31,7 @@ def test_openrouter_uses_the_keys_and_model_from_env(monkeypatch):
     reply = run(provider.complete("system", "hello", "data:image/png;base64,AAAA"))
     assert seen["url"] == "https://openrouter.ai/api/v1/chat/completions"
     assert seen["headers"]["authorization"] == "Bearer sk-or-test" and seen["headers"]["X-Title"] == "Think Canvas"
-    assert seen["body"]["model"] == "openai/gpt-4o" and seen["body"]["max_tokens"] == 700
+    assert seen["body"]["model"] == "openai/gpt-4o" and seen["body"]["max_tokens"] == 2500
     assert seen["body"]["response_format"] == {"type": "json_object"}   # OpenAI models: valid JSON is guaranteed
     assert seen["body"]["messages"][1]["content"][1]["type"] == "image_url"
     assert (reply.tokens_in, reply.tokens_out) == (120, 9)

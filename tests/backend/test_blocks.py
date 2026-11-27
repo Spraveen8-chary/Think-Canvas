@@ -15,7 +15,7 @@ def test_extract_json_from_fenced_reply():
 
 def test_text_markdown_removed_and_limited():
     out = clean({"blocks": [{"t": "text", "text": "**hi** `x`" + "a" * 2000}]})["blocks"][0]
-    assert out["text"].startswith("hi x") and len(out["text"]) <= 700
+    assert out["text"].startswith("hi x") and len(out["text"]) <= 1200
 
 
 def test_unknown_and_empty_blocks_dropped():
@@ -67,9 +67,9 @@ def test_anim_path_and_follow_motion():
     assert a["m"] == [{"type": "follow", "target": "ball", "ms": 2500.0, "along": "arc"}]
 
 
-def test_at_most_four_blocks_and_lookup_passthrough():
+def test_at_most_six_blocks_and_lookup_passthrough():
     r = clean({"read": "q", "lookup": "force mass", "blocks": [{"t": "text", "text": str(i)} for i in range(9)]})
-    assert len(r["blocks"]) == 4 and r["lookup"] == "force mass"
+    assert len(r["blocks"]) == 6 and r["lookup"] == "force mass"
 
 
 def test_chunking_keeps_page_numbers():
@@ -89,3 +89,8 @@ def test_prompt_is_built_from_parts_so_requests_only_pay_for_what_they_use():
     assert not prompts.wants_animation("plot sin x", False)
     assert prompts.wants_animation("animate the earth orbiting the sun", False)
     assert prompts.wants_animation("", True)                             # a picture's question is unknown: keep the spec
+
+
+def test_plot_with_other_variables_is_dropped():
+    assert clean({"blocks": [{"t": "plot", "f": ["x^2+3*y+5*c"]}]})["blocks"] == []
+    assert clean({"blocks": [{"t": "plot", "f": ["x^2+3*x+5", "sin(x)*pi"]}]})["blocks"][0]["f"] == ["x^2+3*x+5", "sin(x)*pi"]
