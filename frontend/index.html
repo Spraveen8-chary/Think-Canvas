@@ -35,6 +35,9 @@
           <button id="undo" class="btn" title="Undo (Ctrl+Z)">Undo</button>
           <button id="clear" class="btn">Clear</button>
           <button id="grid" class="btn" title="Change the grid">Grid</button>
+          <button id="zoomOut" class="btn" title="Zoom out (Ctrl + scroll, or Ctrl −)" aria-label="Zoom out">−</button>
+          <button id="zoomReset" class="btn" title="Reset zoom to 100%" style="min-width:3.6em">100%</button>
+          <button id="zoomIn" class="btn" title="Zoom in (Ctrl + scroll, or Ctrl +)" aria-label="Zoom in">+</button>
           <button id="find" class="btn" title="Jump to your work (Home). Press again for the next spot">Find my work</button>
         </div>
         <div class="group auto">
@@ -118,6 +121,7 @@
             <div class="live-actions">
               <button id="liveMute" class="btn" disabled>Mute</button>
               <button id="liveEnd" class="btn danger" disabled>End</button>
+              <button id="liveClose" class="btn" aria-label="Close Live Tutor" title="Close (ends the session)">×</button>
             </div>
           </div>
           <div id="liveTranscript" class="live-transcript" aria-live="polite"></div>

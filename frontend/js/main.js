@@ -194,12 +194,22 @@ function findWork() {
 }
 $("find").onclick = findWork;
 $("backPill").onclick = () => board.goToSpot(0);
-board.onView = () => { $("backPill").hidden = board.contentVisible(); };
+board.onView = () => {
+  $("backPill").hidden = board.contentVisible();
+  $("zoomReset").textContent = `${Math.round(board.zoom * 100)}%`;
+};
+$("zoomIn").onclick = () => board.setZoom(board.zoom * 1.25);
+$("zoomOut").onclick = () => board.setZoom(board.zoom / 1.25);
+$("zoomReset").onclick = () => board.setZoom(1);
 
 window.addEventListener("keydown", (e) => {
   if (["INPUT", "SELECT", "TEXTAREA"].includes(e.target.tagName)) return;
   if (e.code === "Space") { board.spaceDown = true; e.preventDefault(); }
   if (e.key === "Home") { e.preventDefault(); findWork(); }
+  if ((e.ctrlKey || e.metaKey) && ["+", "=", "-", "0"].includes(e.key)) {
+    e.preventDefault();
+    e.key === "0" ? board.setZoom(1) : board.setZoom(board.zoom * (e.key === "-" ? 0.8 : 1.25));
+  }
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); $("undo").click(); }
 });
 window.addEventListener("keyup", (e) => { if (e.code === "Space") board.spaceDown = false; });
@@ -257,6 +267,17 @@ async function deleteCanvas(c) {
 }
 $("newCanvas").onclick = newCanvas;
 
+// Where voice questions / live drawings go: left-aligned, below everything already on the canvas,
+// so they never overlap old content and never get read together with an earlier question.
+function freeSpotBelowContent() {
+  const v = board.viewBox();
+  if (!board.items.length) return { x: v.x + 60, y: v.y + 60 };
+  const boxes = board.items.map((i) => board.boxOf(i));
+  const left = Math.min(...boxes.map((b) => b.x));
+  const bottom = Math.max(...boxes.map((b) => b.y + b.h));
+  return { x: Math.round(left), y: Math.round(bottom + 80) };
+}
+
 // ---- start -----------------------------------------------------------------------
 (async function init() {
   const [user, cfg] = await Promise.all([api.me(), api.config()]);     // not logged in -> login page
@@ -280,8 +301,9 @@ $("newCanvas").onclick = newCanvas;
     defaultSilenceMs: cfg.sttAutosubmitSilenceMs || 5000,
     store,
     onSubmitText: async (text) => {
-      const v = board.viewBox();
-      const item = board.addText(text, v.x + 60, v.y + 60);
+      const p = freeSpotBelowContent();
+      const item = board.addText(text, p.x, p.y);
+      board.revealBox(board.boxOf(item));
       await ask(board.boxOf(item));
     },
   });
@@ -291,8 +313,8 @@ $("newCanvas").onclick = newCanvas;
       muteBtn: $("liveMute"), endBtn: $("liveEnd"), transcriptEl: $("liveTranscript"),
     },
     onDrawBlock: (block) => {
-      const v = board.viewBox();
-      board.addBlocks([block], { x: v.x + 40, y: v.y + 40, w: 0, h: 0 });
+      const p = freeSpotBelowContent();
+      board.addBlocks([block], { x: p.x, y: p.y, w: 0, h: 0 });
     },
     onClearCanvas: () => { resetPending(); board.clear(); },
     getCanvasId: () => canvasId,

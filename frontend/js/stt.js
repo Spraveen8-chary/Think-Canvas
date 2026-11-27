@@ -8,6 +8,8 @@ import {
   setCommittedText,
 } from "./transcript.js";
 
+// Boosts words speech models often mishear in study questions.
+const KEYTERMS = ["sine", "cosine", "tangent", "theta", "x squared", "flowchart", "binary search", "algorithm", "array", "integral", "derivative", "quadratic"];
 const STREAMING_LANGS = new Set(["auto", "en", "es", "fr", "de", "it", "pt"]);
 
 export function initStt({ elements, onSubmitText, defaultSilenceMs = 5000, store }) {
@@ -170,7 +172,7 @@ export function initStt({ elements, onSubmitText, defaultSilenceMs = 5000, store
     try {
       const { token, ws_url } = await api.sttToken();
       const model = langSelect.value === "en" ? "universal-streaming-english" : "universal-streaming-multilingual";
-      const url = `${ws_url}?sample_rate=16000&format_turns=true&speech_model=${encodeURIComponent(model)}&token=${encodeURIComponent(token)}`;
+      const url = `${ws_url}?sample_rate=16000&format_turns=true&keyterms_prompt=${encodeURIComponent(JSON.stringify(KEYTERMS))}&speech_model=${encodeURIComponent(model)}&token=${encodeURIComponent(token)}`;
 
       ws = new WebSocket(url);
       ws.binaryType = "arraybuffer";

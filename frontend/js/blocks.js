@@ -14,7 +14,7 @@ export function makeBlockItem(block) {
     case "chart": return { type: "chart", spec: block, w: 380, h: 270 };
     case "flow": {
       const lay = layoutFlow(block.nodes, block.edges, block.dir);
-      const k = Math.min(1, 640 / lay.w, 640 / lay.h);
+      const k = Math.min(1, 1000 / lay.w, 1000 / lay.h);   // keep text readable; zoom handles the rest
       return { type: "flow", spec: block, w: Math.ceil(lay.w * k), h: Math.ceil(lay.h * k), k };
     }
     case "draw": return { type: "draw", spec: block, w: block.w, h: block.h };

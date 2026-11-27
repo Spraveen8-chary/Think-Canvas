@@ -14,7 +14,7 @@ const PEN_WIDTH = 3;
 const ERASER_RADIUS = 16;
 const ANSWER_FONT = '21px "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive';
 const TYPED_FONT = '20px system-ui, "Segoe UI", sans-serif';
-const ANSWER_LINE = 29, ANSWER_PAD = 12, ANSWER_WIDTH = 340;
+const ANSWER_LINE = 29, ANSWER_PAD = 12, ANSWER_WIDTH = 560;
 const TYPED_LINE = 26, TYPED_WIDTH = 420;
 const USER_TYPES = ["stroke", "text", "image"];          // what the user put on the canvas (the AI reads these)
 const mod = (a, n) => ((a % n) + n) % n;
@@ -25,7 +25,8 @@ export class Board {
     this.ctx = canvas.getContext("2d");
     this.items = [];
     this.view = { x: 0, y: 0 };
-    this.tool = "pen";                 // pen | text | eraser | hand
+    this.zoom = 1;                     // 1 = 100%; world units are drawn zoom x bigger
+    this.tool = "pen";              // pen | text | eraser | hand
     this.grid = "lines";               // lines | dots | none
     this.spot = null;                  // dashed box: the writing the AI is about to read
     this.spaceDown = false;
@@ -60,10 +61,23 @@ export class Board {
 
   toWorld(e) {
     const r = this.canvas.getBoundingClientRect();
-    return [e.clientX - r.left + this.view.x, e.clientY - r.top + this.view.y];
+    return [(e.clientX - r.left) / this.zoom + this.view.x, (e.clientY - r.top) / this.zoom + this.view.y];
   }
 
-  viewBox() { return { x: this.view.x, y: this.view.y, ...this.cssSize }; }
+  // The visible part of the world (shrinks as you zoom in).
+  viewBox() { const { w, h } = this.cssSize; return { x: this.view.x, y: this.view.y, w: w / this.zoom, h: h / this.zoom }; }
+
+  // Zooms around a point of the canvas element (cx, cy in CSS pixels) so that point stays put.
+  setZoom(z, cx = this.cssSize.w / 2, cy = this.cssSize.h / 2) {
+    const next = Math.min(4, Math.max(0.2, Math.round(z * 100) / 100));
+    if (next === this.zoom) return;
+    const wx = this.view.x + cx / this.zoom, wy = this.view.y + cy / this.zoom;
+    this.zoom = next;
+    this.view.x = wx - cx / next;
+    this.view.y = wy - cy / next;
+    this.render();
+    this.onView();
+  }
 
   setTool(tool) {
     this.tool = tool;
@@ -109,8 +123,8 @@ export class Board {
         d.item.y = Math.round(d.y + p[1] - d.from[1]);
         this.render();
       } else if (d.mode === "pan") {
-        this.view.x -= e.clientX - d.x;
-        this.view.y -= e.clientY - d.y;
+        this.view.x -= (e.clientX - d.x) / this.zoom;
+        this.view.y -= (e.clientY - d.y) / this.zoom;
         d.x = e.clientX; d.y = e.clientY;
         this.render(); this.onView();
       } else if (d.mode === "erase") {
@@ -148,10 +162,22 @@ export class Board {
     c.addEventListener("pointerup", end);
     c.addEventListener("pointercancel", end);
 
+    // Double-click an answer, flowchart or picture to zoom to it; double-click empty space to reset to 100%.
+    c.addEventListener("dblclick", (e) => {
+      if (this.locked || this.tool === "text") return;
+      const it = this.itemAt(this.toWorld(e));
+      if (it) this.zoomToBox(this.boxOf(it)); else this.setZoom(1);
+    });
+
     c.addEventListener("wheel", (e) => {
       e.preventDefault();
-      this.view.x += e.deltaX;
-      this.view.y += e.deltaY;
+      if (e.ctrlKey || e.metaKey) {                          // Ctrl/Cmd + wheel, or trackpad pinch: zoom at the cursor
+        const r = c.getBoundingClientRect();
+        this.setZoom(this.zoom * Math.exp(-e.deltaY * 0.0025), e.clientX - r.left, e.clientY - r.top);
+        return;
+      }
+      this.view.x += e.deltaX / this.zoom;
+      this.view.y += e.deltaY / this.zoom;
       this.render(); this.onView();
     }, { passive: false });
   }
@@ -262,6 +288,7 @@ export class Board {
 
   // Writes the AI's blocks on the canvas next to the user's input at `writingBox`.
   addBlocks(blocks, writingBox) {
+    if (blocks.length > 1) return this.addBlocksInColumns(blocks, writingBox);
     let anchor = writingBox, last = null;
     for (const block of blocks) {
       const item = block.t === "text" ? { type: "answer", x: 0, y: 0, w: this.answerWidth(block.text), text: block.text } : makeBlockItem(block);
@@ -280,6 +307,51 @@ export class Board {
     this.onChange();
     this.onView();
     return Boolean(last);
+  }
+
+  // A multi-block answer is laid out in two columns under the question (each block goes into the shorter
+  // column), so it uses the width of the screen instead of one long strip. Very wide blocks span both.
+  addBlocksInColumns(blocks, writingBox) {
+    const COL_W = 560, GAP = 24;
+    const x0 = writingBox.x, y0 = writingBox.y + writingBox.h + 28;
+    const cols = [y0, y0];
+    let first = null;
+    for (const block of blocks) {
+      const item = block.t === "text" ? { type: "answer", x: 0, y: 0, w: this.answerWidth(block.text), text: block.text } : makeBlockItem(block);
+      if (!item) continue;
+      const size = this.boxOf(item);
+      if (size.w > COL_W) {                                   // wide block: below both columns
+        item.x = x0;
+        item.y = Math.max(cols[0], cols[1]);
+        cols[0] = cols[1] = item.y + size.h + GAP;
+      } else {
+        const c = cols[0] <= cols[1] ? 0 : 1;
+        item.x = x0 + c * (COL_W + GAP);
+        item.y = cols[c];
+        cols[c] += size.h + GAP;
+      }
+      item.x = Math.round(item.x);
+      item.y = Math.round(item.y);
+      this.items.push(item);
+      first ??= this.boxOf(item);
+    }
+    if (!first) return false;
+    this.revealBox(union(writingBox, first));
+    this.render();
+    this.onChange();
+    this.onView();
+    return true;
+  }
+
+  // Zooms and scrolls so `box` fills the screen (used by double-click on a visual).
+  zoomToBox(box, pad = 40) {
+    const { w, h } = this.cssSize;
+    const z = Math.min(4, Math.max(0.2, Math.min((w - 2 * pad) / box.w, (h - 2 * pad) / box.h)));
+    this.zoom = z;
+    this.view.x = box.x + box.w / 2 - w / 2 / z;
+    this.view.y = box.y + box.h / 2 - h / 2 / z;
+    this.render();
+    this.onView();
   }
 
   // Scrolls just enough so `box` is visible.
@@ -304,7 +376,7 @@ export class Board {
   goToSpot(n) {
     const spots = this.spots();
     if (!spots.length) return null;
-    const index = mod(n, spots.length), b = spots[index], { w, h } = this.cssSize;
+    const index = mod(n, spots.length), b = spots[index], { w, h } = this.viewBox();
     this.view.x = Math.round(b.w > w - 80 ? b.x - 40 : b.x + b.w / 2 - w / 2);
     this.view.y = Math.round(b.h > h - 80 ? b.y - 40 : b.y + b.h / 2 - h / 2);
     this.spotIndex = index;
@@ -397,7 +469,7 @@ export class Board {
       }
       return;
     }
-    g.lineWidth = 1;
+    g.lineWidth = 1 / this.zoom;
     for (let x = ox; x < w; x += GRID) {
       g.strokeStyle = isMajor(x, this.view.x) ? COLORS.major : COLORS.minor;
       g.beginPath(); g.moveTo(Math.round(x) + 0.5, 0); g.lineTo(Math.round(x) + 0.5, h); g.stroke();
@@ -413,7 +485,8 @@ export class Board {
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
     g.fillStyle = "#fff";
     g.fillRect(0, 0, w, h);
-    this.paintGrid(g, w, h);
+    g.scale(this.zoom, this.zoom);
+    this.paintGrid(g, w / this.zoom, h / this.zoom);
     g.translate(-this.view.x, -this.view.y);
     for (const it of this.items) {
       if (it.type === "stroke") this.paintStroke(g, it);

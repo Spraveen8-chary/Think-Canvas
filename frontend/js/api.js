@@ -46,7 +46,6 @@ export const api = {
     f.append("language", language || "auto");
     return call("/api/stt/transcribe", "POST", f);
   },
-  liveToken: () => call("/api/live/token", "POST"),
   liveBlock: (name, args) => call("/api/live/blocks", "POST", { name, args }),
   liveHistory: (canvasId, transcript, kinds) => call("/api/live/history", "POST", { canvas_id: canvasId, transcript, kinds }),
 };
