@@ -58,6 +58,7 @@ class Settings:
     assemblyai_api_key: str
     gemini_api_key: str
     gemini_live_model: str
+    embedding_model: str
     stt_autosubmit_silence_ms: int
 
 
@@ -86,5 +87,6 @@ def get_settings() -> Settings:
         assemblyai_api_key=_str("ASSEMBLYAI_API_KEY"),
         gemini_api_key=_str("GEMINI_API_KEY"),
         gemini_live_model=_str("GEMINI_LIVE_MODEL", "models/gemini-3.8-live"),
+        embedding_model=_str("EMBEDDING_MODEL", "text-embedding-3-small"),
         stt_autosubmit_silence_ms=_int("STT_AUTOSUBMIT_SILENCE_MS", 5000),
     )

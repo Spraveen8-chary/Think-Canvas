@@ -44,18 +44,21 @@ async def ask(body: AskIn, user: dict = Depends(current_user), ai: Assistant = D
     if hit:
         return _violation(await asyncio.to_thread(mod.report, user, source, hit.category, typed))
 
-    result = await ai.answer(user["_id"], body.image, typed, body.use_library)
+    memory = await asyncio.to_thread(history.conversation, user["_id"], body.canvas_id, 4)        # earlier turns of this canvas
+    result = await ai.answer(user["_id"], body.image, typed, body.use_library, memory=memory, earlier=body.earlier.strip(), grey_ink=body.grey_ink)
 
     hit = moderation.scan(result.read)                            # handwriting: check the text the AI read from the picture
     if hit or result.flag == "abuse":
         category = hit.category if hit else "abuse"
         return _violation(await asyncio.to_thread(mod.report, user, source, category, result.read or "(handwriting)"))
 
-    first_text = next((b["text"] for b in result.blocks if b["t"] == "text"), "")
-    await asyncio.to_thread(history.add, user["_id"], {
-        "canvas_id": body.canvas_id, "read": result.read, "kinds": [b["t"] for b in result.blocks],
-        "answer": first_text[:300], "sources": result.sources, "tokens": result.tokens,
-    })
+    texts = [b["text"] for b in result.blocks if b["t"] == "text"]
+    if not result.flag:                                           # off-topic replies are not remembered as part of the study conversation
+        await asyncio.to_thread(history.add, user["_id"], {
+            "canvas_id": body.canvas_id, "read": result.read, "kinds": [b["t"] for b in result.blocks],
+            "answer": (texts[0] if texts else "")[:300], "answer_full": " ".join(texts)[:900],
+            "sources": result.sources, "tokens": result.tokens,
+        })
     return {"read": result.read, "blocks": result.blocks, "tokens": result.tokens, "sources": result.sources,
             "flag": result.flag, "conf": result.conf}
 

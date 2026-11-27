@@ -33,13 +33,14 @@ export const api = {
   save: (id, title, items) => call(`/api/canvases/${id}`, "PUT", { title, items }),
   remove: (id) => call(`/api/canvases/${id}`, "DELETE"),
   // AI
-  ask: (image, typed, canvasId, useLibrary, source = "") => call("/api/ask", "POST", { image, typed, canvas_id: canvasId, use_library: useLibrary, source }),
+  ask: (image, typed, canvasId, useLibrary, source = "", earlier = "", greyInk = false) => call("/api/ask", "POST", { image, typed, canvas_id: canvasId, use_library: useLibrary, source, earlier, grey_ink: greyInk }),
   history: () => call("/api/history"),
   // images and library
   uploadImage: (blob) => { const f = new FormData(); f.append("file", blob, "image.jpg"); return call("/api/assets", "POST", f); },
   documents: () => call("/api/documents"),
   uploadDocument: (file) => { const f = new FormData(); f.append("file", file); return call("/api/documents", "POST", f); },
   setDocumentActive: (id, active) => call(`/api/documents/${id}`, "PUT", { active }),
+  reindexDocument: (id) => call(`/api/documents/${id}/reindex`, "POST"),
   deleteDocument: (id) => call(`/api/documents/${id}`, "DELETE"),
   // voice STT & Gemini Live
   sttToken: () => call("/api/stt/token", "POST"),

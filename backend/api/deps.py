@@ -16,6 +16,7 @@ from ..repositories.library import LibraryRepository
 from ..repositories.users import UserRepository
 from ..services.assistant import Assistant
 from ..services.auth_service import AuthService
+from ..services.embeddings import get_embedder
 from ..services.library_service import LibraryService
 from ..services.llm import registry
 from ..services.moderation import ModerationService
@@ -46,7 +47,7 @@ def auth_service(db=Depends(get_db)) -> AuthService:
 
 
 def library_service(repo: LibraryRepository = Depends(library_repo)) -> LibraryService:
-    return LibraryService(repo)
+    return LibraryService(repo, get_embedder(get_settings()))
 
 
 def assistant(library: LibraryService = Depends(library_service)) -> Assistant:

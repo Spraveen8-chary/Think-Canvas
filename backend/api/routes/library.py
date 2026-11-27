@@ -15,7 +15,7 @@ MAX_BYTES = 40_000_000
 
 
 def _row(d: dict) -> dict:
-    return {"id": str(d["_id"]), "name": d["name"], "pages": d["pages"], "chunks": d["chunks"], "active": d["active"]}
+    return {"id": str(d["_id"]), "name": d["name"], "pages": d["pages"], "chunks": d["chunks"], "active": d["active"], "embedded": bool(d.get("embedded"))}
 
 
 @router.get("")
@@ -36,6 +36,12 @@ async def upload(file: UploadFile = File(...), user: dict = Depends(current_user
 def set_active(doc_id: str, body: ActiveIn, user: dict = Depends(current_user), service: LibraryService = Depends(library_service)):
     service.set_active(user["_id"], object_id(doc_id), body.active)
     return {"ok": True}
+
+
+@router.post("/{doc_id}/reindex")
+async def reindex(doc_id: str, user: dict = Depends(current_user), service: LibraryService = Depends(library_service)):
+    """Adds meaning-search vectors to a book that has none yet."""
+    return _row(await asyncio.to_thread(service.reindex, user["_id"], object_id(doc_id)))
 
 
 @router.delete("/{doc_id}")

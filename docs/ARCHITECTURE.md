@@ -57,8 +57,9 @@ calls adds files, not clarity. A service exists where there are rules (auth, lib
 | `sessions` | SHA-256 of the login token, user, expiry | TTL index: expired sessions delete themselves |
 | `canvases` | user, title, `items[]` (strokes, text, images, AI blocks) | one document per canvas, loaded and saved whole |
 | `assets` | imported images (binary, shrunk in the browser) | max 3 MB, private to the owner |
-| `documents` + `chunks` | a book, and its ~800-character passages | `$text` index on `chunks.text` |
-| `history` | what was asked/answered, tokens used | no handwriting or image data |
+| `documents` + `chunks` | a book, and its sentence-aligned passages (<= 800 characters) with an embedding vector each (512-dim float32) | `$text` index on `chunks.text`; vectors compared in the app |
+| `history` | what was asked/answered (`answer_full`), tokens used, per `canvas_id` | no handwriting or image data; it is the memory of a canvas |
+| `reports` | one row per policy violation | for review; strikes live on `users.violations` |
 
 Every query includes `user_id`, so one user can never read another's data (tested).
 
@@ -82,9 +83,9 @@ inset, and asks the model to return commands with global coordinates (`write_tex
 * Pictures are cropped to the new input and capped at 768 px; a small crop is a few hundred tokens.
 * The prompt is assembled from parts: the animation spec (~170 tokens) is sent only for motion words or when a picture is attached.
 * The reply is compact JSON, capped by `MAX_OUTPUT_TOKENS`. No page coordinates.
-* RAG indexes with MongoDB `$text`: zero embedding calls. A question adds only the 3 best passages, trimmed to 520 characters.
+* **Hybrid RAG** (see below): a question adds only the 4 best passages, trimmed to 700 characters; never the whole book.
 * A handwritten question needs a second (text-only) call only if the AI asks for a textbook lookup.
-* No conversation history is resent. Each request stands alone.
+* **Conversation memory** (see below): the last 4 turns of the same canvas are resent in short form, so follow-ups are understood.
 * Per-user rate limit (`ASK_RATE_PER_MIN`) caps the cost of a bug or a user.
 * Every answer shows its token count; every call logs `tokens_in` and `tokens_out`.
 
@@ -96,8 +97,9 @@ inset, and asks the model to return commands with global coordinates (`write_tex
 * **Dependency injection with FastAPI `Depends`.** Routes receive repositories and services; they never build them.
 * **One error shape.** Services raise `AppError` subclasses; one handler returns `{"error": {"code", "message"}}`.
 * **Retries only where they help.** 429/5xx/network errors retry twice with backoff; a rejected key does not.
-* **MongoDB `$text` instead of vectors.** No embedding cost and no extra service. Weaker on paraphrased questions
-  than vector search; the repository's `search` is the one place to change if that becomes a problem.
+* **Vectors compared in the app, not in the database.** MongoDB's `$vectorSearch` exists only on Atlas, so passages
+  carry their embedding and the app does an exact cosine search (numpy) over the user's active books. That is fast
+  for textbook-sized libraries (thousands of passages); use Atlas Vector Search if a single user holds millions.
 * **Whole-canvas documents.** Simple and fast for a canvas of thousands of strokes. A very large canvas (tens of MB)
   would need splitting into tiles; the 16 MB MongoDB document limit is the ceiling.
 * **No eval anywhere.** Plot formulas go through a hand-written parser; AI blocks are data, validated twice (server and browser).
@@ -154,3 +156,29 @@ Long-lived vendor keys (`ASSEMBLYAI_API_KEY`, `GEMINI_API_KEY`) stay on the serv
 ## Reading handwriting
 
 The browser redraws the newest writing at 768 px (long side) with thick strokes, so small writing is not blurred by the AI service. The AI replies with what it read (`read`), a confidence (`conf`) and a kind (`kind`). When it is not sure (`conf` < 0.7) the answer starts with "I read this as ...", and the status line shows what was read. An empty reply for handwriting is retried once.
+
+
+## Conversation memory
+
+A canvas is one conversation. Every answer is stored in `history` with the `canvas_id`, the question as the AI read it
+(`read`) and the answer text (`answer_full`). The next request on that canvas sends the last 4 turns as a short
+"Conversation so far" block (answers trimmed to 350 characters), so "explain it", "show the code for it" or "why?" are
+understood. A new canvas starts fresh. Off-topic and rule-breaking turns are not remembered.
+
+Continuing a written question: writing the AI has already answered is marked `done` on the canvas. When you write near it
+again, the picture shows the old writing in light grey and the new writing in black, typed text that was answered is sent as
+"Earlier (already answered)", and the AI is told to answer only the new part using the old as context.
+
+## Hybrid RAG (retrieval-augmented generation)
+
+1. **Ingest** (`rag.py`, `library_service.py`): text is extracted (pypdf), split into passages at paragraph and sentence
+   boundaries (<= 800 characters, one sentence of overlap), and each passage is embedded (`EMBEDDING_MODEL`, default
+   `text-embedding-3-small`, 512 dimensions) and stored with the passage. If the embedding service is down the book is
+   still saved and works with keywords; the Library's **Index** button adds vectors later (`POST /api/documents/{id}/reindex`).
+2. **Retrieve**: the question (plus the previous question of the conversation, for follow-ups) is embedded and compared with
+   every passage of the user's switched-on books by cosine similarity (passages below 0.25 are ignored, so unrelated
+   questions get no book text). In parallel MongoDB `$text` finds keyword matches.
+3. **Fuse**: the two rankings are merged with Reciprocal Rank Fusion; the top 4 passages are added to the prompt as
+   `[Book p.12] ...` and the answer cites them.
+4. **Generate**: only those passages (not the book) go to the AI. A handwritten question is first read by the AI, which may
+   ask for a lookup; the second, text-only call then gets the passages.

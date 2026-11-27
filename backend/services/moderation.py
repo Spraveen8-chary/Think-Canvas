@@ -121,6 +121,26 @@ def is_smalltalk(text: str) -> bool:
     return cleaned in _SMALLTALK
 
 
+# ---- is this obviously a study topic? (second opinion when the AI says "off topic") ---------------------------------------------
+_STUDY_WORDS = {
+    "code", "coding", "program", "programming", "algorithm", "algorithms", "search", "sort", "sorting", "python", "java", "javascript", "sql", "database",
+    "array", "linked", "stack", "queue", "tree", "graph", "recursion", "function", "loop", "compiler", "network", "protocol", "html", "css", "react",
+    "math", "maths", "mathematics", "algebra", "geometry", "calculus", "trigonometry", "equation", "formula", "theorem", "proof", "derivative", "integral",
+    "matrix", "vector", "probability", "statistics", "physics", "force", "motion", "energy", "velocity", "acceleration", "newton", "newtons", "einstein",
+    "chemistry", "reaction", "acid", "atom", "molecule", "periodic", "biology", "cell", "dna", "photosynthesis", "evolution", "ecosystem", "history",
+    "revolution", "empire", "geography", "economics", "commerce", "accounting", "grammar", "essay", "poem", "literature", "explain", "define", "solve",
+    "derive", "calculate", "theory", "law", "laws", "principle", "exam", "syllabus", "lesson", "chapter", "binary", "pointer", "sin", "cos", "tan", "log",
+}
+
+
+def looks_educational(text: str) -> bool:
+    """True when the text contains an obvious study word or maths ("x^2", "=", "sin"...)."""
+    t = (text or "").lower()
+    if re.search(r"\d\s*[-+*/^=x]\s*\d|[a-z]\s*\^\s*\d|d/dx|=", t):
+        return True
+    return any(w in _STUDY_WORDS for w in re.findall(r"[a-z+#]+", t))
+
+
 # ---- strikes and reports -------------------------------------------------------------------------------------------
 def warning_payload(strikes: int, category: str) -> dict:
     suspended = strikes >= MAX_STRIKES

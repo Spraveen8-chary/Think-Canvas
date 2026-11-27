@@ -6,6 +6,7 @@ import { Board } from "./board.js";
 import { api } from "./api.js";
 import { renderSidebar } from "./sidebar.js";
 import { union } from "./geometry.js";
+import { splitContext, textOf } from "./context.js";
 import { shrinkImage } from "./imaging.js";
 import { library, initLibrary, initHistory, initAccount, initDialogClose, showViolation } from "./dialogs.js";
 import { initStt } from "./stt.js";
@@ -66,9 +67,13 @@ async function ask(seed, source = "") {
   cancelTimer();
   const near = board.itemsNear(seed);
   if (!near.length) return;
+  const { fresh, done, reread } = splitContext(near);       // new writing = the question; answered writing = context
+  if (reread) near.forEach((i) => { i.done = false; });
   const box = board.unionBox(near, seed);
-  const typed = near.filter((i) => i.type === "text").map((i) => i.text).join("\n");
+  const typed = textOf(fresh);                               // only new typed text is a question...
+  const earlier = textOf(done);                              // ...older typed text is sent as context
   const visual = near.filter((i) => i.type !== "text");
+  const newInk = fresh.some((i) => i.type !== "text");
 
   dirty = null;
   busy = true;
@@ -77,10 +82,10 @@ async function ask(seed, source = "") {
   setStatus("Reading…", "busy");
   $("askNow").disabled = true;
   try {
-    const image = visual.length ? board.snapshot(visual, box) : null;   // typed text alone costs no image tokens
-    const res = await api.ask(image, typed, canvasId, library.enabled, source || (visual.length ? "" : "type"));
+    const image = newInk ? board.snapshot(visual, box) : null;           // typed text alone costs no image tokens; answered ink is drawn grey
+    const res = await api.ask(image, typed, canvasId, library.enabled, source || (newInk ? "" : "type"), earlier, Boolean(image) && visual.some((i) => i.done));
     if (res.violation) {                                   // inappropriate language: remove it from the canvas and warn
-      board.removeItems(near);
+      board.removeItems(fresh);
       showViolation(res.violation);
       setStatus("That message was removed.", "error");
       return;
@@ -89,6 +94,8 @@ async function ask(seed, source = "") {
     sessionTokens += used;
     $("tokens").textContent = `${sessionTokens.toLocaleString()} tokens this session`;
     if (res.blocks.length && board.addBlocks(res.blocks, box)) {
+      near.forEach((i) => { i.done = true; });                // answered: the next ask treats this as context, not as a new question
+      board.onChange();
       const read = res.read && !res.flag ? `I read: ${res.read} · ` : "";
       setStatus(res.flag === "off_topic" ? "Think Canvas only helps with study questions." : `${read}Answered · ${used || "?"} tokens${res.sources.length ? " · from " + res.sources.join(", ") : ""}`, res.flag ? "wait" : "ok");
     } else {

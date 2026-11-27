@@ -148,3 +148,40 @@ def test_live_setup_has_language_noise_and_education_rules():
     assert setup["realtimeInputConfig"]["automaticActivityDetection"]["startOfSpeechSensitivity"] == "START_SENSITIVITY_LOW"
     assert "customVocabulary" in setup["inputAudioTranscription"]
     assert "customVocabulary" not in live_svc.build_setup("gemini-3.1-flash-live-preview", "x")["setup"]["inputAudioTranscription"]
+
+
+def test_study_topics_are_recognised_but_chit_chat_is_not():
+    for t in ["binary search code", "Newton laws", "bubble sort in python", "2x + 5 = 11", "photosynthesis", "d/dx x^3", "SQL joins"]:
+        assert moderation.looks_educational(t), t
+    for t in ["best pizza near me", "hello how are you", "tell me a joke", "who is the cutest actor"]:
+        assert not moderation.looks_educational(t), t
+
+
+class _Sequence(FakeProvider):
+    """Replies with the canned replies one after another."""
+    def __init__(self, *replies):
+        super().__init__()
+        self.queue = list(replies)
+
+    async def complete(self, system, text, image=None):
+        self.reply = self.queue.pop(0)
+        return await super().complete(system, text, image)
+
+
+def test_a_wrong_off_topic_on_a_study_topic_is_retried_and_answered(client, monkeypatch):
+    from backend.services.llm import registry
+    provider = _Sequence('{"read":"binary search code","flag":"off_topic","blocks":[]}',
+                         '{"read":"binary search code","conf":0.9,"flag":"none","blocks":[{"t":"text","text":"def binary_search(a, x): ..."}]}')
+    monkeypatch.setattr(registry, "get_provider", lambda: provider)
+    register(client)
+    r = client.post("/api/ask", json={"image": "data:image/png;base64,AAAA", "canvas_id": "c1"}).json()
+    assert len(provider.calls) == 2 and r["flag"] is None and "binary_search" in r["blocks"][0]["text"]
+
+
+def test_real_off_topic_is_not_retried(client, monkeypatch):
+    from backend.services.llm import registry
+    provider = _Sequence('{"read":"best pizza near me","conf":0.95,"flag":"off_topic","blocks":[]}')
+    monkeypatch.setattr(registry, "get_provider", lambda: provider)
+    register(client)
+    r = client.post("/api/ask", json={"image": "data:image/png;base64,AAAA", "canvas_id": "c1"}).json()
+    assert len(provider.calls) == 1 and r["flag"] == "off_topic"

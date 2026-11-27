@@ -6,6 +6,7 @@ httpx
 python-multipart
 python-dotenv
 websockets
+numpy
 # tests only
 pytest
 mongomock

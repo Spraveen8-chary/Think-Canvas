@@ -424,16 +424,17 @@ export class Board {
     g.scale(scale, scale);
     g.translate(-b.x, -b.y);
     for (const it of items) {
-      if (it.type === "stroke") this.paintStroke(g, it, Math.max(3, 11 / scale));
-      else if (it.type === "image") this.paintImage(g, it);
+      // writing that was already answered is drawn light grey: it is context, the black writing is the new question
+      if (it.type === "stroke") this.paintStroke(g, it, Math.max(3, 11 / scale), it.done ? "#a9afc0" : undefined);
+      else if (it.type === "image") { if (it.done) g.globalAlpha = 0.4; this.paintImage(g, it); g.globalAlpha = 1; }
     }
     return c.toDataURL("image/png");
   }
 
   // ---- drawing ---------------------------------------------------------------------------------
-  paintStroke(g, stroke, width = PEN_WIDTH) {
+  paintStroke(g, stroke, width = PEN_WIDTH, color = COLORS.ink) {
     const p = stroke.points;
-    g.strokeStyle = COLORS.ink;
+    g.strokeStyle = color;
     g.lineWidth = width;
     g.lineCap = g.lineJoin = "round";
     g.beginPath();

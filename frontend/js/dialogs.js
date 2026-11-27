@@ -9,6 +9,16 @@ export const library = {
   set enabled(v) { try { localStorage.setItem("tc.rag", v ? "1" : "0"); } catch { /* ignore */ } },
 };
 
+function reindexBtn(d) {
+  const b = el("button", { className: "btn", type: "button", title: "Add meaning-based search to this book", textContent: "Index" });
+  b.onclick = async () => {
+    b.disabled = true; b.textContent = "Indexing…";
+    try { await api.reindexDocument(d.id); } catch (e) { alert(e.message); }
+    renderLibrary();
+  };
+  return b;
+}
+
 // ---- Library -------------------------------------------------------------------------
 async function renderLibrary() {
   const docs = await api.documents();
@@ -20,7 +30,7 @@ async function renderLibrary() {
     use.onchange = () => api.setDocumentActive(d.id, use.checked);
     const del = el("button", { className: "del", title: "Delete", textContent: "×" });
     del.onclick = async () => { if (confirm(`Remove "${d.name}" from your library?`)) { await api.deleteDocument(d.id); renderLibrary(); } };
-    list.append(el("li", {}, use, el("span", { className: "grow" }, el("b", { textContent: d.name }), el("small", { textContent: `${d.pages} pages · ${d.chunks} passages` })), del));
+    list.append(el("li", {}, use, el("span", { className: "grow" }, el("b", { textContent: d.name }), el("small", { textContent: `${d.pages} pages · ${d.chunks} passages · ${d.embedded ? "search by meaning + keywords" : "keyword search only"}` })), ...(d.embedded ? [] : [reindexBtn(d)]), del));
   }
 }
 

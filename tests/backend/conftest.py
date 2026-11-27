@@ -16,6 +16,12 @@ from backend.main import app  # noqa: E402
 from backend.services.llm import LLMProvider, LLMReply, registry  # noqa: E402
 
 
+@pytest.fixture(autouse=True)
+def no_real_embeddings(monkeypatch):
+    """Tests must never call the real embedding API (they would cost money and need a key)."""
+    monkeypatch.setattr(deps, "get_embedder", lambda settings: None)
+
+
 @pytest.fixture()
 def database():
     d = mongomock.MongoClient().think_canvas_test

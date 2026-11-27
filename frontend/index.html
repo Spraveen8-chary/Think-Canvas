@@ -140,7 +140,7 @@
   <dialog id="libraryDialog">
     <form method="dialog">
       <h2>Library</h2>
-      <p class="note">Add your textbooks or notes. They are split into passages and stored in your MongoDB. When you ask a question, the best 3 passages are sent to the AI, so answers can come from your books while using few tokens.</p>
+      <p class="note">Add your textbooks or notes. They are split into passages, and each passage gets a meaning vector. When you ask a question, the best few passages (found by meaning and by keywords) are sent to the AI, so answers can come from your books while using few tokens.</p>
       <label class="row"><input id="useLibrary" type="checkbox"> Use my library when answering</label>
       <ul id="docList" class="list plain"></ul>
       <div class="row">
