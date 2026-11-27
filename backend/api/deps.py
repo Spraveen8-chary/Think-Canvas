@@ -6,7 +6,7 @@ thin, makes every layer replaceable in tests, and gives one place to see how the
 from fastapi import Depends, Request
 
 from ..core.config import Settings, get_settings
-from ..core.errors import Unauthorized
+from ..core.errors import Forbidden, Unauthorized
 from ..core.ratelimit import RateLimiter
 from ..db import get_db
 from ..repositories.assets import AssetRepository
@@ -18,6 +18,7 @@ from ..services.assistant import Assistant
 from ..services.auth_service import AuthService
 from ..services.library_service import LibraryService
 from ..services.llm import registry
+from ..services.moderation import ModerationService
 
 COOKIE = "tc_session"
 
@@ -57,7 +58,13 @@ def current_user(request: Request, auth: AuthService = Depends(auth_service)) ->
     user = auth.user_for_token(request.cookies.get(COOKIE))
     if not user:
         raise Unauthorized("Please log in")
+    if user.get("suspended"):
+        raise Forbidden("Your account is suspended for repeated policy violations.")
     return user
+
+
+def moderation_service(db=Depends(get_db)) -> ModerationService:
+    return ModerationService(UserRepository(db))
 
 
 def client_key(request: Request) -> str:

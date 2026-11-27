@@ -7,7 +7,7 @@ import { api } from "./api.js";
 import { renderSidebar } from "./sidebar.js";
 import { union } from "./geometry.js";
 import { shrinkImage } from "./imaging.js";
-import { library, initLibrary, initHistory, initAccount, initDialogClose } from "./dialogs.js";
+import { library, initLibrary, initHistory, initAccount, initDialogClose, showViolation } from "./dialogs.js";
 import { initStt } from "./stt.js";
 import { initLiveSession } from "./live.js";
 
@@ -62,7 +62,7 @@ function armTimer() {
 board.onStrokeStart = cancelTimer;                   // still writing: hold on
 board.onUserInput = (box) => { dirty = union(dirty, box); armTimer(); };
 
-async function ask(seed) {
+async function ask(seed, source = "") {
   cancelTimer();
   const near = board.itemsNear(seed);
   if (!near.length) return;
@@ -78,12 +78,19 @@ async function ask(seed) {
   $("askNow").disabled = true;
   try {
     const image = visual.length ? board.snapshot(visual, box) : null;   // typed text alone costs no image tokens
-    const res = await api.ask(image, typed, canvasId, library.enabled);
+    const res = await api.ask(image, typed, canvasId, library.enabled, source || (visual.length ? "" : "type"));
+    if (res.violation) {                                   // inappropriate language: remove it from the canvas and warn
+      board.removeItems(near);
+      showViolation(res.violation);
+      setStatus("That message was removed.", "error");
+      return;
+    }
     const used = res.tokens.in + res.tokens.out;
     sessionTokens += used;
     $("tokens").textContent = `${sessionTokens.toLocaleString()} tokens this session`;
     if (res.blocks.length && board.addBlocks(res.blocks, box)) {
-      setStatus(`Answered · ${used || "?"} tokens${res.sources.length ? " · from " + res.sources.join(", ") : ""}`, "ok");
+      const read = res.read && !res.flag ? `I read: ${res.read} · ` : "";
+      setStatus(res.flag === "off_topic" ? "Think Canvas only helps with study questions." : `${read}Answered · ${used || "?"} tokens${res.sources.length ? " · from " + res.sources.join(", ") : ""}`, res.flag ? "wait" : "ok");
     } else {
       setStatus("Couldn't read that. Try writing larger, or type it with the Type tool.", "error");
     }
@@ -304,7 +311,7 @@ function freeSpotBelowContent() {
       const p = freeSpotBelowContent();
       const item = board.addText(text, p.x, p.y);
       board.revealBox(board.boxOf(item));
-      await ask(board.boxOf(item));
+      await ask(board.boxOf(item), "voice");
     },
   });
   initLiveSession({
@@ -318,6 +325,7 @@ function freeSpotBelowContent() {
     },
     onClearCanvas: () => { resetPending(); board.clear(); },
     getCanvasId: () => canvasId,
+    onViolation: showViolation,
   });
   const list = await refreshList();
   list.length ? openCanvas(list[0].id) : newCanvas();

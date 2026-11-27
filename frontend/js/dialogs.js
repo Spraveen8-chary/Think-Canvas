@@ -40,6 +40,20 @@ export function initLibrary() {
   };
 }
 
+// ---- Warning pop-up (inappropriate language) --------------------------------------------
+// v = { title, message, strikes, limit, suspended }. After a suspension the student is signed out.
+export function showViolation(v) {
+  const dlg = $("violationDialog");
+  $("violTitle").textContent = v.title || "Warning";
+  $("violMessage").textContent = v.message || "";
+  $("violStrikes").textContent = v.limit ? `Strike ${Math.min(v.strikes, v.limit)} of ${v.limit}` : "";
+  dlg.onclose = async () => {
+    if (v.suspended) { try { await api.logout(); } catch { /* ignore */ } location.href = "/login.html"; }
+  };
+  if (!dlg.open) dlg.showModal();
+}
+window.addEventListener("tc:suspended", (e) => showViolation({ title: "Account suspended", message: e.detail, suspended: true }));
+
 // ---- History -------------------------------------------------------------------------
 export function initHistory() {
   const dlg = $("historyDialog");

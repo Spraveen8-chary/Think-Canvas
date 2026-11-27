@@ -138,15 +138,31 @@ def validate_tool_block(name: str, args: dict) -> dict:
     return {"action": "draw", "block": sanitized["blocks"][0]}
 
 
-def build_setup(model: str, system_instruction: str, resume_handle: str | None = None) -> dict:
+LANGUAGES = {"en": "English", "hi": "Hindi", "te": "Telugu", "ta": "Tamil"}
+VOCABULARY = ["Think Canvas", "photosynthesis", "algorithm", "derivative", "integral", "quadratic", "binary search", "flowchart",
+              "Newton", "velocity", "acceleration", "sine", "cosine", "tangent", "array", "pointer", "recursion", "matrix"]
+
+
+def build_setup(model: str, system_instruction: str, resume_handle: str | None = None, language: str = "en") -> dict:
     """The first message sent to Gemini Live. Built on the server so the browser cannot change it."""
+    lang = LANGUAGES.get(language, "English")
+    instruction = (f"{system_instruction} The student speaks {lang}. RESPOND IN {lang.upper()}. YOU MUST RESPOND UNMISTAKABLY IN {lang.upper()}, "
+                   f"unless the student asks you to switch language.")
+    transcription: dict = {}
+    if "3.8" in model:                                       # speech biasing is documented for gemini-3.8-live
+        transcription["customVocabulary"] = VOCABULARY
     setup = {
         "model": model if model.startswith(("models/", "tunedModels/")) else f"models/{model}",   # Gemini wants the "models/" prefix
         "generationConfig": {"responseModalities": ["AUDIO"]},
-        "systemInstruction": {"parts": [{"text": system_instruction}]},
+        "systemInstruction": {"parts": [{"text": instruction}]},
         "sessionResumption": {"handle": resume_handle} if resume_handle else {},
         "contextWindowCompression": {"slidingWindow": {}},
-        "inputAudioTranscription": {},
+        # less eager voice detection: background noise and short sounds no longer start a turn
+        "realtimeInputConfig": {"automaticActivityDetection": {
+            "startOfSpeechSensitivity": "START_SENSITIVITY_LOW", "endOfSpeechSensitivity": "END_SENSITIVITY_LOW",
+            "prefixPaddingMs": 120, "silenceDurationMs": 700,
+        }},
+        "inputAudioTranscription": transcription,
         "outputAudioTranscription": {},
         "tools": [{"functionDeclarations": CANVAS_TOOL_DECLARATIONS}],
     }

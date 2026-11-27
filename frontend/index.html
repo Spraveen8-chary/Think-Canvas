@@ -124,6 +124,12 @@
               <button id="liveClose" class="btn" aria-label="Close Live Tutor" title="Close (ends the session)">×</button>
             </div>
           </div>
+          <div class="live-options">
+            <label>I speak <select id="liveLang" aria-label="Language you speak">
+              <option value="en">English</option><option value="hi">Hindi</option><option value="te">Telugu</option><option value="ta">Tamil</option>
+            </select></label>
+            <label title="With headphones you can interrupt the tutor. Without them the mic pauses while the tutor talks, so its voice is not picked up as your speech."><input id="liveHeadphones" type="checkbox"> I'm using headphones</label>
+          </div>
           <div id="liveTranscript" class="live-transcript" aria-live="polite"></div>
         </aside>
       </div>
@@ -166,6 +172,16 @@
         <button id="accLogout" class="btn right">Log out</button>
         <button class="btn" data-close>Close</button>
       </div>
+    </form>
+  </dialog>
+
+  <dialog id="violationDialog" class="violation" aria-labelledby="violTitle">
+    <form method="dialog">
+      <div class="viol-icon" aria-hidden="true">!</div>
+      <h2 id="violTitle">Warning</h2>
+      <p id="violMessage"></p>
+      <p id="violStrikes" class="viol-strikes"></p>
+      <div class="row"><button id="violOk" class="btn primary right" value="ok">I understand</button></div>
     </form>
   </dialog>
 

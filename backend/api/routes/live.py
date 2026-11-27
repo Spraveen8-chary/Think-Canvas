@@ -10,7 +10,9 @@ from ...core.config import get_settings
 from ...core.errors import RateLimited
 from ...db import get_db
 from ...repositories.users import UserRepository
+from ...services import moderation
 from ...services.auth_service import AuthService
+from ...services.moderation import ModerationService
 from ...repositories.history import HistoryRepository
 from ...services import live as live_service
 from ...services.prompts import LIVE_TUTOR_INSTRUCTION
@@ -34,6 +36,9 @@ async def live_socket(ws: WebSocket):
     if not user:
         await ws.close(code=1008, reason="Please log in")
         return
+    if user.get("suspended"):
+        await ws.close(code=1008, reason="Your account is suspended for repeated policy violations.")
+        return
     if not s.gemini_api_key:
         await ws.close(code=1011, reason="Live Session is not configured (missing GEMINI_API_KEY)")
         return
@@ -49,13 +54,15 @@ async def live_socket(ws: WebSocket):
         await ws.close(code=1002, reason="Expected a start message")
         return
     handle = start.get("resumeHandle") if isinstance(start.get("resumeHandle"), str) else None
+    language = start.get("language") if start.get("language") in live_service.LANGUAGES else "en"
+    mod = ModerationService(UserRepository(get_db()))
 
     live_service.log.info("live.session user=%s model=%s", str(user["_id"])[:4], s.gemini_live_model)
     try:
         async with websockets.connect(
             live_service.LIVE_WS_URL, additional_headers={"x-goog-api-key": s.gemini_api_key}, max_size=None,
         ) as gem:
-            await gem.send(json.dumps(live_service.build_setup(s.gemini_live_model, LIVE_TUTOR_INSTRUCTION, handle)))
+            await gem.send(json.dumps(live_service.build_setup(s.gemini_live_model, LIVE_TUTOR_INSTRUCTION, handle, language)))
 
             async def up():                                   # browser -> Gemini (audio, text, tool results)
                 while True:
@@ -65,8 +72,20 @@ async def live_socket(ws: WebSocket):
                     await gem.send(msg)
 
             async def down():                                 # Gemini -> browser
+                heard = ""                                    # what the student said recently, for the language check
                 async for msg in gem:
-                    await ws.send_text(msg if isinstance(msg, str) else msg.decode("utf-8", "replace"))
+                    text = msg if isinstance(msg, str) else msg.decode("utf-8", "replace")
+                    if '"inputTranscription"' in text:
+                        try:
+                            heard = (heard + (json.loads(text)["serverContent"]["inputTranscription"].get("text") or ""))[-300:]
+                        except (KeyError, TypeError, ValueError):
+                            pass
+                        hit = moderation.scan(heard)
+                        if hit:                               # bad language in the student's speech: warn, report, end the session
+                            payload = await asyncio.to_thread(mod.report, user, "voice", hit.category, heard)
+                            await ws.send_text(json.dumps({"tcViolation": payload}))
+                            return
+                    await ws.send_text(text)
 
             tasks = [asyncio.create_task(up()), asyncio.create_task(down())]
             done, pending = await asyncio.wait(tasks, timeout=live_service.MAX_SESSION_S, return_when=asyncio.FIRST_COMPLETED)

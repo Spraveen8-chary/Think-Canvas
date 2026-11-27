@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from pymongo.errors import DuplicateKeyError
 
 from ..core import security
-from ..core.errors import BadRequest, Conflict, Unauthorized
+from ..core.errors import BadRequest, Conflict, Forbidden, Unauthorized
 from ..core.logging import kv, mask_email
 from ..repositories.users import UserRepository
 
@@ -44,6 +44,8 @@ class AuthService:
         if not user or not security.verify_password(password, user["password_hash"]):
             log.warning("auth.login_failed %s", kv(email=mask_email(email)))
             raise Unauthorized("Wrong email or password")
+        if user.get("suspended"):
+            raise Forbidden("Your account is suspended for repeated policy violations.")
         log.info("auth.login %s", kv(user=user["_id"]))
         return (user, *self._new_session(user))
 

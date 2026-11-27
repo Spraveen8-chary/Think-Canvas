@@ -203,8 +203,11 @@ def sanitize(raw: dict) -> dict:
         if len(blocks) >= MAX_BLOCKS:
             break
     lookup = raw.get("lookup")
+    flag = raw.get("flag") if raw.get("flag") in ("off_topic", "abuse") else None
+    kind = raw.get("kind") if raw.get("kind") in ("math", "text", "code", "diagram", "doodle") else None
     return {
         "read": _clean(raw.get("read", ""), 200),
+        "flag": flag, "kind": kind, "conf": _num(raw.get("conf"), 0, 1),
         "blocks": blocks,
         "lookup": _clean(lookup, 100) if isinstance(lookup, str) and lookup.strip() else None,
     }

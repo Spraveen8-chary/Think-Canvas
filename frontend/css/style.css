@@ -119,3 +119,14 @@ dialog label input:not([type="checkbox"]) { display: block; width: 100%; margin-
 @media (max-width: 760px) {
   .sidebar { display: none; }
 }
+
+/* warning pop-up for inappropriate language */
+dialog.violation { width: min(460px, 92vw); text-align: center; border-top: 6px solid var(--danger); }
+.viol-icon { width: 46px; height: 46px; margin: 2px auto 10px; border-radius: 50%; background: #fdecea; color: var(--danger); font-size: 28px; font-weight: 800; line-height: 46px; }
+dialog.violation h2 { color: var(--danger); font-size: 20px; }
+dialog.violation p { margin: 8px 0; line-height: 1.5; }
+.viol-strikes { font-weight: 700; color: var(--danger); }
+dialog.violation .row { margin-top: 14px; }
+.live-options { display: flex; flex-wrap: wrap; gap: 6px 14px; padding: 8px 12px; border-bottom: 1px solid var(--line); font-size: 12px; align-items: center; }
+.live-options label { display: flex; align-items: center; gap: 5px; margin: 0; font-weight: 500; }
+.live-options select { padding: 2px 4px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }

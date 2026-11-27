@@ -11,6 +11,9 @@ async function call(url, method = "GET", body) {
     location.href = "/login.html";
     throw new Error("Please log in");
   }
+  if (res.status === 403 && /suspended/i.test(data.error?.message || "")) {      // account suspended for policy violations
+    window.dispatchEvent(new CustomEvent("tc:suspended", { detail: data.error.message }));
+  }
   if (!res.ok) throw new Error(data.error?.message || res.statusText);
   return data;
 }
@@ -30,7 +33,7 @@ export const api = {
   save: (id, title, items) => call(`/api/canvases/${id}`, "PUT", { title, items }),
   remove: (id) => call(`/api/canvases/${id}`, "DELETE"),
   // AI
-  ask: (image, typed, canvasId, useLibrary) => call("/api/ask", "POST", { image, typed, canvas_id: canvasId, use_library: useLibrary }),
+  ask: (image, typed, canvasId, useLibrary, source = "") => call("/api/ask", "POST", { image, typed, canvas_id: canvasId, use_library: useLibrary, source }),
   history: () => call("/api/history"),
   // images and library
   uploadImage: (blob) => { const f = new FormData(); f.append("file", blob, "image.jpg"); return call("/api/assets", "POST", f); },

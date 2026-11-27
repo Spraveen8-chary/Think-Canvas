@@ -231,6 +231,12 @@ export class Board {
     else this.render();
     this.onView();
   }
+  // Removes items (e.g. a message that broke the rules) and saves.
+  removeItems(items) {
+    const gone = new Set(items);
+    this.items = this.items.filter((i) => !gone.has(i));
+    this.render(); this.onChange(); this.onView();
+  }
   undo() { if (this.items.pop()) { this.render(); this.onChange(); this.onView(); } }
   clear() { this.items = []; this.render(); this.onChange(); this.onView(); }
 

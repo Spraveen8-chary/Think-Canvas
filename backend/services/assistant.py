@@ -16,7 +16,7 @@ from bson import ObjectId
 
 from ..core.errors import UpstreamError
 from ..core.logging import kv
-from . import blocks, prompts
+from . import blocks, moderation, prompts
 from .library_service import LibraryService
 from .llm import LLMError, LLMProvider, LLMReply
 
@@ -30,6 +30,8 @@ class Answer:
     blocks: list[dict]
     tokens: dict = field(default_factory=lambda: {"in": 0, "out": 0})
     sources: list[str] = field(default_factory=list)
+    flag: str | None = None                     # "off_topic" | "abuse" (set by the AI), see services/moderation.py
+    conf: float | None = None                   # how sure the AI is that it read the handwriting correctly
 
 
 def _user_text(typed: str, excerpts: list[dict], has_image: bool) -> str:
@@ -68,6 +70,11 @@ class Assistant:
         out = Answer("", [])
         calls = 0
 
+        if typed and not image and moderation.is_smalltalk(typed):     # "hi", "thanks"...: a fixed reply, no AI call
+            out.read, out.flag = typed[:200], "off_topic"
+            out.blocks = [{"t": "text", "text": moderation.OFF_TOPIC_MESSAGE}]
+            return out
+
         def count(reply: LLMReply):
             out.tokens["in"] += reply.tokens_in
             out.tokens["out"] += reply.tokens_out
@@ -84,7 +91,7 @@ class Assistant:
                 count(reply)
                 calls += 1
 
-        if image and not typed and not result["blocks"] and not excerpts:   # the AI gave up on messy writing: one firmer retry
+        if image and not typed and not result["blocks"] and not excerpts and not result["flag"]:   # the AI gave up on messy writing: one firmer retry
             result, reply = await self._ask(
                 prompts.system_prompt(animation=False),
                 "The picture shows handwriting that is a question or a math expression. Do not return an empty answer: "
@@ -94,10 +101,15 @@ class Assistant:
             calls += 1
 
         out.read, out.blocks = result["read"], result["blocks"]
+        out.flag, out.conf = result["flag"], result["conf"]
+        if out.flag == "off_topic":                                    # one fixed, friendly message (the AI cannot be talked out of it)
+            out.blocks = [{"t": "text", "text": moderation.OFF_TOPIC_MESSAGE}]
+        elif out.flag == "abuse":
+            out.blocks = []
         out.sources = sorted({f"{e['source']} p.{e['page']}" for e in excerpts})
         log.info("ask.done %s", kv(
             user=user_id, provider=self.provider.name, model=reply.model or self.provider.model, calls=calls,
             has_picture=bool(image), typed_chars=len(typed), tokens_in=out.tokens["in"], tokens_out=out.tokens["out"],
-            blocks=",".join(b["t"] for b in out.blocks) or "none", sources=len(out.sources), ms=round((time.perf_counter() - started) * 1000),
+            blocks=",".join(b["t"] for b in out.blocks) or "none", flag=out.flag, conf=out.conf, sources=len(out.sources), ms=round((time.perf_counter() - started) * 1000),
         ))
         return out

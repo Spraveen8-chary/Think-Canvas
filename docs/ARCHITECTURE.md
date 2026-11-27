@@ -137,3 +137,20 @@ Long-lived vendor keys (`ASSEMBLYAI_API_KEY`, `GEMINI_API_KEY`) stay on the serv
    - `WS /api/live/ws` (login cookie + same-origin required, rate-limited) relays one voice session to Gemini Live (`GEMINI_LIVE_MODEL`). The server holds `GEMINI_API_KEY` and builds the setup (tutor prompt, `AUDIO` output, `sessionResumption`, `contextWindowCompression`, input/output transcription, canvas tools), so the browser only sends audio and tool results. No ephemeral tokens are used.
    - The browser streams 16 kHz PCM16 audio to `/api/live/ws`, plays 24 kHz PCM responses through a gapless `AudioContext` queue (flushing immediately on `interrupted`), and transparently reconnects on `goAway` using `sessionResumptionUpdate` handles (max 3 attempts).
    - Tool calls (`draw_text_note`, `draw_plot`, `draw_chart`, `draw_flow`, `draw_geometry`, `clear_canvas_area`) are validated server-side via `POST /api/live/blocks` (reusing `services/blocks.py`), rendered via `board.addBlocks`, and acknowledged with `toolResponse`. Session transcripts and drawn block kinds are saved to `history` via `POST /api/live/history`.
+
+## Safety and guardrails (education only)
+
+- **Scope:** the system prompt makes Think Canvas an education-only helper. Anything else (small talk, jokes, entertainment, random text) gets one fixed, friendly redirect message (`OFF_TOPIC_MESSAGE` in `services/moderation.py`). Plain greetings such as "hi" are answered locally without calling the AI. The AI reports this with `"flag": "off_topic"`.
+- **Bad language:** `moderation.scan()` is a local word filter (English, Hindi/Hinglish, Telugu, Tamil) that also catches disguised spellings (`f*ck`, `f u c k`, `fuuuck`, leetspeak), threats and direct insults. It runs on typed text before the AI sees it, on speech (the live transcript) and on the text the AI read from handwriting. The AI can also flag context the filter cannot see (`"flag": "abuse"`).
+- **Action:** a hit returns `violation` instead of an answer; the browser removes what was written and shows a warning pop-up. Every incident is stored in the `reports` collection and counts as a strike on the user (`users.violations`). At 3 strikes the account is **suspended** (`users.suspended`): login and every API call return 403. Deleting a suspended account is a manual review step.
+- **Live Session:** the relay checks the student's transcribed speech with the same filter, sends `{"tcViolation": ...}` and ends the session. The tutor's instructions are education-only, one language (the student picks English, Hindi, Telugu or Tamil), and "do not answer background noise".
+
+## Live Session audio quality
+
+- The microphone is paused while the tutor is speaking unless **I'm using headphones** is ticked, so the tutor's own voice (speaker echo) is never fed back as "student speech".
+- Voice detection is set to low sensitivity with 700 ms of silence, so background noise does not start a turn.
+- A transcript chunk written in a script that does not match the chosen language (for example Chinese or Hindi text while English is selected) is dropped and not shown.
+
+## Reading handwriting
+
+The browser redraws the newest writing at 768 px (long side) with thick strokes, so small writing is not blurred by the AI service. The AI replies with what it read (`read`), a confidence (`conf`) and a kind (`kind`). When it is not sure (`conf` < 0.7) the answer starts with "I read this as ...", and the status line shows what was read. An empty reply for handwriting is retried once.

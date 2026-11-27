@@ -33,6 +33,7 @@ class AskIn(BaseModel):
     typed: str = Field(default="", max_length=2000)                    # typed question(s) near the writing
     canvas_id: str | None = None
     use_library: bool = True
+    source: str = Field(default="", max_length=12)                     # "type" | "voice" | "" (handwriting/other); used in abuse reports
 
 
 class SttTokenIn(BaseModel):

@@ -18,8 +18,20 @@ function fromBase64(b64) {
   return out;
 }
 
-export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanvasId }) {
+// Which writing scripts the student's speech can legitimately be transcribed in. A transcript chunk written in any
+// other script (the speech model sometimes "hears" random languages in noise) is dropped instead of shown.
+const ALLOWED_SCRIPTS = { en: ["Latin"], hi: ["Devanagari", "Latin"], te: ["Telugu", "Latin"], ta: ["Tamil", "Latin"] };
+export function inLanguage(text, lang) {
+  const scripts = ALLOWED_SCRIPTS[lang] || ["Latin"];
+  const outsideLetter = new RegExp(String.raw`[^${scripts.map((s) => String.raw`\p{Script=${s}}`).join("")}\P{L}]`, "u");   // a letter of a different script
+  return !outsideLetter.test(text);
+}
+
+export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanvasId, onViolation = () => {} }) {
   const { panel, toggleBtn, stateBadge, muteBtn, endBtn, transcriptEl } = elements;
+  const langSelect = document.getElementById("liveLang");
+  const headphonesBox = document.getElementById("liveHeadphones");
+  let tutorTalkingUntil = 0;                       // performance.now() until which the tutor's voice is still playing
 
   let ws = null;
   let micCtx = null;
@@ -61,6 +73,7 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
       try { src.stop(); } catch {}
     }
     activeSources.clear();
+    tutorTalkingUntil = 0;
     nextPlayTime = playCtx ? playCtx.currentTime : 0;
   }
 
@@ -83,6 +96,7 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
     const startAt = Math.max(playCtx.currentTime, nextPlayTime);
     src.start(startAt);
     nextPlayTime = startAt + audioBuf.duration;
+    tutorTalkingUntil = performance.now() + (nextPlayTime - playCtx.currentTime) * 1000 + 450;   // + a little tail for room echo
     activeSources.add(src);
     src.onended = () => activeSources.delete(src);
   }
@@ -166,7 +180,7 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
     let ready = false;                                   // true once Gemini confirmed the session
 
     sock.onopen = () => {
-      sock.send(JSON.stringify({ start: true, resumeHandle }));   // the server builds the Gemini setup
+      sock.send(JSON.stringify({ start: true, resumeHandle, language: langSelect?.value || "en" }));   // the server builds the Gemini setup
     };
 
     sock.onmessage = async (ev) => {
@@ -177,6 +191,12 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
       try { msg = JSON.parse(raw); } catch { return; }
 
       resetIdleTimer();
+
+      if (msg.tcViolation) {                           // bad language heard: warn and end the session
+        onViolation(msg.tcViolation);
+        endSession();
+        return;
+      }
 
       if (msg.setupComplete !== undefined) {
         ready = true;
@@ -205,7 +225,7 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
           stopPlayback();
           flushTurnTranscripts();
         }
-        if (sc.inputTranscription?.text) {
+        if (sc.inputTranscription?.text && inLanguage(sc.inputTranscription.text, langSelect?.value || "en")) {
           userBuffer += sc.inputTranscription.text;
           appendBubble("user", userBuffer, true);
         }
@@ -279,6 +299,7 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
     modelBuffer = "";
     transcriptEl.innerHTML = "";
     setState("Connecting", "connecting");
+    if (langSelect) langSelect.disabled = true;
 
     // Create + resume the speaker context right now, inside the click: browsers keep audio contexts
     // that are created later (e.g. when the first reply arrives) suspended, which sounds like "it doesn't speak".
@@ -298,6 +319,7 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
       workletNode = new AudioWorkletNode(micCtx, "pcm16-worklet");
       workletNode.port.onmessage = (ev) => {
         if (muted || !ws || ws.readyState !== WebSocket.OPEN) return;
+        if (!headphonesBox?.checked && performance.now() < tutorTalkingUntil) return;    // no headphones: do not feed the tutor's own voice back
         const b64 = toBase64(new Uint8Array(ev.data));
         ws.send(JSON.stringify({
           realtimeInput: { audio: { data: b64, mimeType: "audio/pcm;rate=16000" } },
@@ -339,6 +361,7 @@ export function initLiveSession({ elements, onDrawBlock, onClearCanvas, getCanva
 
     muteBtn.disabled = true;
     endBtn.disabled = true;
+    if (langSelect) langSelect.disabled = false;
     toggleBtn.classList.remove("on");
     setState("Ended", "ended");
     if (note) appendBubble("model", note, false);
