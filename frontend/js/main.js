@@ -85,7 +85,7 @@ async function ask(seed) {
     if (res.blocks.length && board.addBlocks(res.blocks, box)) {
       setStatus(`Answered · ${used || "?"} tokens${res.sources.length ? " · from " + res.sources.join(", ") : ""}`, "ok");
     } else {
-      setStatus("Nothing to answer here", "");
+      setStatus("Couldn't read that. Try writing larger, or type it with the Type tool.", "error");
     }
   } catch (e) {
     setStatus(e.message, "error");

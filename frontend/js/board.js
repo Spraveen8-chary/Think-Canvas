@@ -391,8 +391,10 @@ export class Board {
   // Long side <= maxSide pixels: image tokens grow with picture size, so smaller is cheaper.
   snapshot(items, box, maxSide = 768) {
     const b = grow(box, 20);
-    let scale = Math.min(1, maxSide / Math.max(b.w, b.h));
-    if (Math.max(b.w, b.h) < 240) scale = Math.min(2, 240 / Math.max(b.w, b.h));
+    // Always draw the long side at maxSide px (big writing shrinks, small writing is re-drawn larger and crisp).
+    // Strokes are drawn ~11px wide in the picture (thin strokes are misread). A small picture is blown up blurry by the AI service itself, and then thin strokes are misread
+    // ("(a+b)^2" became "a+b" or "cat"); this costs no extra tokens because it would be enlarged anyway.
+    const scale = Math.min(4, maxSide / Math.max(b.w, b.h));
     const c = document.createElement("canvas");
     c.width = Math.max(1, Math.ceil(b.w * scale));
     c.height = Math.max(1, Math.ceil(b.h * scale));
@@ -402,7 +404,7 @@ export class Board {
     g.scale(scale, scale);
     g.translate(-b.x, -b.y);
     for (const it of items) {
-      if (it.type === "stroke") this.paintStroke(g, it, Math.max(3, 2.4 / scale));
+      if (it.type === "stroke") this.paintStroke(g, it, Math.max(3, 11 / scale));
       else if (it.type === "image") this.paintImage(g, it);
     }
     return c.toDataURL("image/png");

@@ -23,6 +23,8 @@ class OpenAICompatible(LLMProvider):
         body = {"model": self.model, "messages": [{"role": "system", "content": system}, {"role": "user", "content": content}]}
         # OpenAI's newer models want max_completion_tokens; everything else uses max_tokens.
         body["max_completion_tokens" if self.official_openai else "max_tokens"] = self.max_tokens
+        if image and self.model.startswith(("gpt-4", "gpt-3", "openai/gpt-4")):
+            body["temperature"] = 0                                   # reading handwriting: no random variation (newer models reject this setting)
         if self.json_mode:
             body["response_format"] = {"type": "json_object"}        # the API then guarantees syntactically valid JSON
         headers = dict(self.extra_headers)

@@ -32,7 +32,9 @@ Block types (default is text; use a visual only when it helps or is asked for):
 {"t":"flow","dir":"down|right","nodes":[["id","label","box|oval|diamond"]],"edges":[["id1","id2","optional label"]]}  <=12 nodes; layout is automatic
 {"t":"draw","w":320,"h":220,"s":[["line",x1,y1,x2,y2],["arrow",x1,y1,x2,y2],["rect",x,y,w,h],["circle",cx,cy,r],["ellipse",cx,cy,rx,ry],["text",x,y,"label"]]}  coordinates inside w*h; <=40 shapes"""
 
-TAIL = 'Only if it is a doodle, a label, or cut-off writing with no question, return {"read":"","blocks":[]}.'
+TAIL = ('Handwriting can be messy. Any math expression, equation, formula, word problem, or text ending in "?" or "=" is a question: '
+        'always answer it with your best reading, even if unsure (a small mark raised after a bracket or letter is a power: "(a+b)^2"; "x" and "×" look alike). '
+        'Say in "read" what you read. Return {"read":"","blocks":[]} only for a plain doodle or a lone label with nothing to answer.')
 
 ANIM = """{"t":"anim","w":400,"h":260,"ms":4000,"o":[{"id":"sun","type":"circle","cx":200,"cy":130,"r":20,"fill":"#f90"},{"id":"p","type":"circle","cx":300,"cy":130,"r":8,"fill":"#38f"}],"m":[{"type":"orbit","target":"p","center":"sun","rx":100,"ry":100,"ms":3000}]}
   objects: circle{cx,cy,r} rect{x,y,w,h} line{x1,y1,x2,y2} text{x,y,text,size} path{points:[[x,y],...]} (a curve, 10-25 points); optional fill, stroke. motions: orbit{target,center:id|[x,y],rx,ry,ms} spin{target,ms} move{target,from:[x,y],to:[x,y],ms} pulse{target,from,to,ms} follow{target,along:pathId,ms} (the object travels along a path object).

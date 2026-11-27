@@ -84,6 +84,15 @@ class Assistant:
                 count(reply)
                 calls += 1
 
+        if image and not typed and not result["blocks"] and not excerpts:   # the AI gave up on messy writing: one firmer retry
+            result, reply = await self._ask(
+                prompts.system_prompt(animation=False),
+                "The picture shows handwriting that is a question or a math expression. Do not return an empty answer: "
+                "write your best reading in \"read\" and answer it (if truly unreadable, say what you can make out and ask the student to write it larger).",
+                image)
+            count(reply)
+            calls += 1
+
         out.read, out.blocks = result["read"], result["blocks"]
         out.sources = sorted({f"{e['source']} p.{e['page']}" for e in excerpts})
         log.info("ask.done %s", kv(
